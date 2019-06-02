@@ -1,0 +1,1 @@
+{"id": "9d6e8d01d4ee42c6ad2f7afe25fa4d6f", "name": "EUR-CSA", "marketSet": "DEFAULT", "currency": "EUR", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

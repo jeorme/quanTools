@@ -1,0 +1,1 @@
+{"id": "$id/TRY_LIBOR", "name": "TRY_LIBOR", "currency": "TRY", "switchDates": [0, 11], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

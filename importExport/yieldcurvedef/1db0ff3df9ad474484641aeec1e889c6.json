@@ -1,0 +1,1 @@
+{"id": "1db0ff3df9ad474484641aeec1e889c6", "name": "ZAR_DISC", "marketSet": "DEFAULT", "currency": "ZAR", "switchDates": [0, 6], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

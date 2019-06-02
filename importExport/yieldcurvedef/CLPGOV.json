@@ -1,0 +1,1 @@
+{"id": "$id/CLPGOV", "name": "CLPGOV", "currency": "CLP", "switchDates": [0, 9], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

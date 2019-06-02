@@ -1,0 +1,1 @@
+{"id": "fe8e20222e044a408dc45119339696ae", "name": "EURABSE", "marketSet": "DEFAULT", "currency": "EUR", "switchDates": [0, 21], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

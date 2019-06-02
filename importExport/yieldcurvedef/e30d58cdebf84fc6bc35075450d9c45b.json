@@ -1,0 +1,1 @@
+{"id": "e30d58cdebf84fc6bc35075450d9c45b", "name": "JPY-JP", "marketSet": "DEFAULT", "currency": "JPY", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

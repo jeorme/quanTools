@@ -1,0 +1,1 @@
+{"id": "$id/EUR-BB", "name": "EUR-BB", "currency": "EUR", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

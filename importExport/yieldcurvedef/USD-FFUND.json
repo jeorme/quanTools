@@ -1,0 +1,1 @@
+{"id": "$id/USD-FFUND", "name": "USD-FFUND", "currency": "USD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

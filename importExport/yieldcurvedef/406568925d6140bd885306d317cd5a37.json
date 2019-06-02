@@ -1,0 +1,1 @@
+{"id": "406568925d6140bd885306d317cd5a37", "name": "GBP-AAA", "marketSet": "DEFAULT", "currency": "GBP", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

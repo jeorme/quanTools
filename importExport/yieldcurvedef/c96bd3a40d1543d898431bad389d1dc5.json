@@ -1,0 +1,1 @@
+{"id": "c96bd3a40d1543d898431bad389d1dc5", "name": "USD-TR", "marketSet": "DEFAULT", "currency": "USD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

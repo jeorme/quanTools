@@ -1,0 +1,1 @@
+{"id": "255d4e43780a4f18aacfea39eca21b9d", "name": "USD-JP", "marketSet": "DEFAULT", "currency": "USD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

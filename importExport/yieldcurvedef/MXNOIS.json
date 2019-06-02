@@ -1,0 +1,1 @@
+{"id": "$id/MXNOIS", "name": "MXNOIS", "currency": "MXN", "switchDates": [0, 22], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "simple", "zeroCouponBasis": "ACT/360"}

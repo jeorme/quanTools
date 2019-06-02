@@ -1,0 +1,1 @@
+{"id": "c8288f987c4a49788255a7a0f05d9213", "name": "CAD-LIBOR", "marketSet": "DEFAULT", "currency": "CAD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

@@ -1,0 +1,1 @@
+{"id": "04f062e0d9fb4f9680ca5019c323a7b8", "name": "EUR-BBB", "marketSet": "DEFAULT", "currency": "EUR", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

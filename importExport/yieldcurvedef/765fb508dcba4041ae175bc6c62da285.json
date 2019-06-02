@@ -1,0 +1,1 @@
+{"id": "765fb508dcba4041ae175bc6c62da285", "name": "AUDSMSB", "marketSet": "DEFAULT", "currency": "AUD", "switchDates": [0, 22], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

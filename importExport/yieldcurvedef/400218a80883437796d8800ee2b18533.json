@@ -1,0 +1,1 @@
+{"id": "400218a80883437796d8800ee2b18533", "name": "GBPSBQL", "marketSet": "DEFAULT", "currency": "GBP", "switchDates": [0, 25], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

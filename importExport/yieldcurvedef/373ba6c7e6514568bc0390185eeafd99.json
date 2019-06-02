@@ -1,0 +1,1 @@
+{"id": "373ba6c7e6514568bc0390185eeafd99", "name": "GBP-LIBOR", "marketSet": "DEFAULT", "currency": "GBP", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

@@ -1,0 +1,1 @@
+{"id": "a54e46ca5b8e4533931353be37c17e8e", "name": "CAD_DISC", "marketSet": "DEFAULT", "currency": "CAD", "switchDates": [0, 20], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

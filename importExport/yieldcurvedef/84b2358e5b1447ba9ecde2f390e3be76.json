@@ -1,0 +1,1 @@
+{"id": "84b2358e5b1447ba9ecde2f390e3be76", "name": "TRY_DISC", "marketSet": "DEFAULT", "currency": "TRY", "switchDates": [0, 17], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

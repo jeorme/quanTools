@@ -1,0 +1,1 @@
+{"id": "$id/GBPSBSL", "name": "GBPSBSL", "currency": "GBP", "switchDates": [0, 25], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

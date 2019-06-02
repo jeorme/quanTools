@@ -1,0 +1,1 @@
+{"id": "69f94c8e006840e89592393d8b7e6972", "name": "JPY-LIBOR", "marketSet": "DEFAULT", "currency": "JPY", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

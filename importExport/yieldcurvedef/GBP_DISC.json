@@ -1,0 +1,1 @@
+{"id": "$id/GBP_DISC", "name": "GBP_DISC", "currency": "GBP", "switchDates": [0, 22], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

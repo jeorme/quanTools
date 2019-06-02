@@ -1,0 +1,1 @@
+{"id": "49aa53ed5e6f4dd1861b3b25c76f9360", "name": "EUR-AAA", "marketSet": "DEFAULT", "currency": "EUR", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

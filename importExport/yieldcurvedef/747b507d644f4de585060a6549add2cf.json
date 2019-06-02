@@ -1,0 +1,1 @@
+{"id": "747b507d644f4de585060a6549add2cf", "name": "EUR-AU", "marketSet": "DEFAULT", "currency": "EUR", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

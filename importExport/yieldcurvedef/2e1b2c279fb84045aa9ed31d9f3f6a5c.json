@@ -1,0 +1,1 @@
+{"id": "2e1b2c279fb84045aa9ed31d9f3f6a5c", "name": "CAD_BS", "marketSet": "DEFAULT", "currency": "CAD", "switchDates": [0, 5], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

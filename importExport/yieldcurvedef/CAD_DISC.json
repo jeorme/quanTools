@@ -1,0 +1,1 @@
+{"id": "$id/CAD_DISC", "name": "CAD_DISC", "currency": "CAD", "switchDates": [0, 20], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

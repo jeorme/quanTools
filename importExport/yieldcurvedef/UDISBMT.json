@@ -1,0 +1,1 @@
+{"id": "$id/UDISBMT", "name": "UDISBMT", "currency": "UDI", "switchDates": [0, 22], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

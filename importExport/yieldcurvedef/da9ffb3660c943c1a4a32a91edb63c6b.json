@@ -1,0 +1,1 @@
+{"id": "da9ffb3660c943c1a4a32a91edb63c6b", "name": "JPYXUSD", "marketSet": "DEFAULT", "currency": "JPY", "switchDates": [0, 25], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

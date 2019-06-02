@@ -1,0 +1,2 @@
+ibm-cos-sdk-core==2.*,>=2.0.0
+ibm-cos-sdk-s3transfer==2.*,>=2.0.0

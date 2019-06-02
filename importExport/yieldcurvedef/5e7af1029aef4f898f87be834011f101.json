@@ -1,0 +1,1 @@
+{"id": "5e7af1029aef4f898f87be834011f101", "name": "USD-FFUND", "marketSet": "DEFAULT", "currency": "USD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

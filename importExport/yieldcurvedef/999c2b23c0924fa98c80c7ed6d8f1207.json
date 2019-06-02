@@ -1,0 +1,1 @@
+{"id": "999c2b23c0924fa98c80c7ed6d8f1207", "name": "USD-BBB", "marketSet": "DEFAULT", "currency": "USD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

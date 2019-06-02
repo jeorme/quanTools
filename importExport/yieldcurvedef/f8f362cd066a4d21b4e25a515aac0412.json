@@ -1,0 +1,1 @@
+{"id": "f8f362cd066a4d21b4e25a515aac0412", "name": "UDISBMT", "marketSet": "DEFAULT", "currency": "UDI", "switchDates": [0, 22], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

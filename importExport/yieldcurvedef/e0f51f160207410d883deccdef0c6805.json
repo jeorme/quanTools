@@ -1,0 +1,1 @@
+{"id": "e0f51f160207410d883deccdef0c6805", "name": "GBP-SONIA", "marketSet": "DEFAULT", "currency": "GBP", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

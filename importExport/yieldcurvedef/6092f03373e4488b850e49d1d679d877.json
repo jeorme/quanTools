@@ -1,0 +1,1 @@
+{"id": "6092f03373e4488b850e49d1d679d877", "name": "USDSBQL", "marketSet": "DEFAULT", "currency": "USD", "switchDates": [0, 21], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

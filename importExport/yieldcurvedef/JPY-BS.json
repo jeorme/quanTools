@@ -1,0 +1,1 @@
+{"id": "$id/JPY-BS", "name": "JPY-BS", "currency": "JPY", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}
