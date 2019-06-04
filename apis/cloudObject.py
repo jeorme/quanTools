@@ -1,13 +1,10 @@
 import json
 import os
 
-from ibm_botocore.client import Config
 import ibm_boto3
-
-
-from flask import Flask, jsonify
-from flask_restplus import Resource, fields, reqparse, Namespace
-from flask_cors import CORS
+from flask import jsonify, request
+from flask_restplus import Resource, reqparse, Namespace
+from ibm_botocore.client import Config
 
 # the app
 api = Namespace('cloud-object', 'add cloud object into a bucket')
@@ -25,10 +22,8 @@ class Objects(Resource):
                                       ibm_auth_endpoint="https://iam.cloud.ibm.com/identity/token",
                                       config=Config(signature_version='oauth'),
                                       endpoint_url="https://s3.eu-de.cloud-object-storage.appdomain.cloud/")
-        parser = reqparse.RequestParser()
-        parser.add_argument('bucket', type=str)
-        args = parser.parse_args()
-        id = str(args["bucket"])
+        parser = request.get_json()
+        id = str(parser["bucket"])
         val = []
         objects = resource.Bucket(id).objects.all()
         for obj in objects:
@@ -49,11 +44,8 @@ class Object(Resource):
                                       ibm_auth_endpoint="https://iam.cloud.ibm.com/identity/token",
                                       config=Config(signature_version='oauth'),
                                       endpoint_url="https://s3.eu-de.cloud-object-storage.appdomain.cloud/")
-        parser = reqparse.RequestParser()
-        parser.add_argument('bucket', type=str)
-        args = parser.parse_args()
+        args = request.get_json()
         bucket = str(args["bucket"])
-        val = []
         resource.Object(bucket,id).download_file("/tmp/"+id)
         data={}
         with open("/tmp/"+id,"r") as file:
@@ -71,9 +63,7 @@ class Object(Resource):
                                       ibm_auth_endpoint="https://iam.cloud.ibm.com/identity/token",
                                       config=Config(signature_version='oauth'),
                                       endpoint_url="https://s3.eu-de.cloud-object-storage.appdomain.cloud/")
-        parser = reqparse.RequestParser()
-        parser.add_argument('bucket', type=str)
-        args = parser.parse_args()
+        args = request.get_json()
         resource.Object(str(args["bucket"]), id).delete()
 
         return jsonify(id+" deleted")

@@ -17,6 +17,4 @@ api = Api(
 api.add_namespace(bucket)
 api.add_namespace(cloudObject)
 api.add_namespace(timeseries)
-api.add_namespace(trade)
-api.add_namespace(pricer)
 
