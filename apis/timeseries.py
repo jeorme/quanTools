@@ -5,7 +5,7 @@ import pandas as pd
 
 from timeseries.generateTS import generateArma, fit
 
-api = Namespace('timeseries', 'tools for timeseries analysis and forecasting')
+api = Namespace('timeseries', 'generate data')
 # model the input data
 
 #pricer end point
@@ -25,11 +25,12 @@ class generateTS(Resource):
         data = generateArma(p,q,samples)
         return jsonify(pd.Series(data).to_json(orient="values"))
 
+
 @api.route('/fit/arima')
 class fitTS(Resource):
     @api.doc("generate time series of type : AR , MA, ARMA")
     @api.response(200, "Sucess")
-    @api.expect(Namespace("fit time series").model("Enter the parameter of the ARIMA model : p, q",
+    @api.expect(api.model("Enter the parameter of the ARIMA model : p, q",
                           {"data":fields.List(fields.Float),
                            "p":fields.Integer(min=0),
                            "d":fields.Integer(min=0),
