@@ -2,6 +2,7 @@ from flask import jsonify,request
 from flask_restplus import Resource, fields, reqparse, Namespace
 import numpy as np
 import pandas as pd
+import json
 
 from timeseries.generateTS import generateArma, fit
 
@@ -30,7 +31,7 @@ class generateTS(Resource):
 class fitTS(Resource):
     @api.doc("generate time series of type : AR , MA, ARMA")
     @api.response(200, "Sucess")
-    @api.expect(api.model("Enter the parameter of the ARIMA model : p, q",
+    @api.expect(api.model("fit data according to ARIMA : p,d,q",
                           {"data":fields.List(fields.Float),
                            "p":fields.Integer(min=0),
                            "d":fields.Integer(min=0),
@@ -42,4 +43,6 @@ class fitTS(Resource):
         q = int(content["q"])
         data = content["data"]
         result = fit(p,d,q,data)
-        return jsonify(result)
+        param = pd.DataFrame(result.params)[0].to_json()
+        val = {"params":json.loads(param),"aic":result.aic,"bic":result.bic,"hqic":result.hqic}
+        return jsonify(val)

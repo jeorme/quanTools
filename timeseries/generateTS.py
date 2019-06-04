@@ -9,7 +9,7 @@ def generateArma(p,q,sample):
     maparams = np.r_[1, q]
     return arma_generate_sample(arparams,maparams,sample)
 
-def fit(data,p,d,q,log=False):
+def fit(p,d,q,data,log=False):
     return sm.tsa.ARMA(pd.DataFrame(data),order=(p,d,q)).fit(disp=log)
 
 

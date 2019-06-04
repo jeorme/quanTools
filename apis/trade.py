@@ -1,10 +1,7 @@
-from ibm_botocore.client import Config
 import ibm_boto3
-
-
-from flask import Flask, jsonify
+from flask import jsonify
 from flask_restplus import Resource, fields, reqparse, Namespace
-from flask_cors import CORS
+from ibm_botocore.client import Config
 
 # the app
 api = Namespace('instrument', 'list of supported instrument : FX Cash / FXD OTC')
