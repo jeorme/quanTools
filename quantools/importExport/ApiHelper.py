@@ -2,7 +2,7 @@ import requests
 import json
 import urllib3
 
-from importExport.ConfigHelper import *
+from quantools.importExport.ConfigHelper import *
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
