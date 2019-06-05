@@ -1,1 +1,1 @@
-__all__ = ['boxJenkins', 'generateTS']
+__all__ = ['boxJenkins', 'generateTS',"nsTest"]
