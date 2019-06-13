@@ -54,7 +54,7 @@ class Object(Resource):
         os.remove("/tmp/"+id)
         return jsonify(data)
 
-    @api.doc('get object by id and bucket')
+    @api.doc('delete object by id and bucket')
     @api.param("bucket", "name of the bucket")
     def delete(self, id):
         resource = ibm_boto3.resource('s3',

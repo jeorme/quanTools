@@ -8,7 +8,7 @@ from .cloudObject import api as cloudObject
 
 
 api = Api(
-    title='My quantitative toosl',
+    title='My quantitative tools',
     version='1.0',
     description='quantitative tools for pricing / calibrating / time series analysis',
     # All API metadatas

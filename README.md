@@ -1,1 +1,1 @@
-"Hard coded repo pricer"
+"quantitative tools for data analysis and quantitative finance"

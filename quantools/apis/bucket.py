@@ -27,6 +27,7 @@ class Buckets(Resource):
             val.append( bucket.name)
 
         return jsonify(val)
+
 @api.route('/<id>')
 class Bucket(Resource):
     @api.doc('create a bucket')
