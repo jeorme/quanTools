@@ -27,8 +27,8 @@ def adfTest(data):
     }
     return output
 
-def trainFitArma(p,q,train,test):
-    model = ARIMA(train, order=(p, 0, q))
+def trainFitArima(p,d,q,train,test):
+    model = ARIMA(train, order=(p, d, q))
     model_fit = model.fit(disp=0)
     param = pd.DataFrame(model_fit.params)[0].to_json()
     predictions = model_fit.forecast(steps=len(test))

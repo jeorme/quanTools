@@ -16,6 +16,9 @@ class Objects(Resource):
     @api.response(200,"Success")
     @api.param("bucket", "name of the bucket")
     def get(self):
+        """
+        get the cloud object in a given bucket
+        """
         resource = ibm_boto3.resource('s3',
                                       ibm_api_key_id="emEo1VS5H2EOk51A80O_fy2VlwDjaAt0WUSEJueCPtKx",
                                       ibm_service_instance_id="crn:v1:bluemix:public:cloud-object-storage:global:a/72e640662b324e26b6e6c571a681ddf2:bc719890-69ba-4422-a180-4329f613e720::",
@@ -38,6 +41,9 @@ class Object(Resource):
     @api.doc('get object by id and bucket')
     @api.param("bucket", "name of the bucket")
     def get(self,id):
+        """
+            get object by id and bucket
+        """
         resource = ibm_boto3.resource('s3',
                                       ibm_api_key_id="emEo1VS5H2EOk51A80O_fy2VlwDjaAt0WUSEJueCPtKx",
                                       ibm_service_instance_id="crn:v1:bluemix:public:cloud-object-storage:global:a/72e640662b324e26b6e6c571a681ddf2:bc719890-69ba-4422-a180-4329f613e720::",
@@ -57,6 +63,9 @@ class Object(Resource):
     @api.doc('delete object by id and bucket')
     @api.param("bucket", "name of the bucket")
     def delete(self, id):
+        """
+            delete object by id and bucket
+        """
         resource = ibm_boto3.resource('s3',
                                       ibm_api_key_id="emEo1VS5H2EOk51A80O_fy2VlwDjaAt0WUSEJueCPtKx",
                                       ibm_service_instance_id="crn:v1:bluemix:public:cloud-object-storage:global:a/72e640662b324e26b6e6c571a681ddf2:bc719890-69ba-4422-a180-4329f613e720::",

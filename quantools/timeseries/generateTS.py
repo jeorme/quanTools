@@ -9,8 +9,8 @@ def generateArma(p,q,sample):
     maparams = np.r_[1, q]
     return arma_generate_sample(arparams,maparams,sample)
 
-def fit(p,d,q,data,log=False):
-    return sm.tsa.ARMA(pd.DataFrame(data),order=(p,d,q)).fit(disp=log)
+def fit(p,d,q,data,trend,log=False):
+    return sm.tsa.ARMA(pd.DataFrame(data),order=(p,d,q)).fit(trend=trend,disp=log)
 
 
 def generateArima(phi=np.array([0]), theta=np.array([0]), d=0, t=0, mu=0, sigma=1, samples=20, burn=10):

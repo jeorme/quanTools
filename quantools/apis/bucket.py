@@ -5,16 +5,19 @@ import ibm_boto3
 from flask import Flask, jsonify
 from flask_restplus import Resource, fields, reqparse, Namespace
 from flask_cors import CORS
+from flask_apispec.annotations import doc
 
 # the app
 api = Namespace('bucket', 'handle the bucket : add / delete buckets')
 
-# fx-spot end point
 @api.route('/')
 class Buckets(Resource):
-    @api.doc("return all the buckets name")
     @api.response(200,"Success")
     def get(self):
+        """
+        return all the buckets name
+        :return: list of bucket name
+        """
         resource = ibm_boto3.resource('s3',
                                       ibm_api_key_id="emEo1VS5H2EOk51A80O_fy2VlwDjaAt0WUSEJueCPtKx",
                                       ibm_service_instance_id="crn:v1:bluemix:public:cloud-object-storage:global:a/72e640662b324e26b6e6c571a681ddf2:bc719890-69ba-4422-a180-4329f613e720::",
@@ -30,9 +33,13 @@ class Buckets(Resource):
 
 @api.route('/<id>')
 class Bucket(Resource):
-    @api.doc('create a bucket')
+    @doc('create a bucket')
     @api.response(200, "Success : bucket created")
     def post(self,id):
+        """
+        create a bucket
+        :param id: id of the bucket
+        """
         resource = ibm_boto3.resource('s3',
                                       ibm_api_key_id="emEo1VS5H2EOk51A80O_fy2VlwDjaAt0WUSEJueCPtKx",
                                       ibm_service_instance_id="crn:v1:bluemix:public:cloud-object-storage:global:a/72e640662b324e26b6e6c571a681ddf2:bc719890-69ba-4422-a180-4329f613e720::",
@@ -45,6 +52,10 @@ class Bucket(Resource):
     @api.doc('delete a bucket')
     @api.response(200, "Success : bucket deleted")
     def delete(self,id):
+        """
+            delete a bucket
+            :param id: id of the bucket
+        """
         resource = ibm_boto3.resource('s3',
                                      ibm_api_key_id="emEo1VS5H2EOk51A80O_fy2VlwDjaAt0WUSEJueCPtKx",
                                      ibm_service_instance_id="crn:v1:bluemix:public:cloud-object-storage:global:a/72e640662b324e26b6e6c571a681ddf2:bc719890-69ba-4422-a180-4329f613e720::",
