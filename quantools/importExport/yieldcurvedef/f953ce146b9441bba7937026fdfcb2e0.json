@@ -1,1 +1,0 @@
-{"id": "f953ce146b9441bba7937026fdfcb2e0", "name": "CHFOIS", "marketSet": "DEFAULT", "currency": "CHF", "switchDates": [0, 22], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

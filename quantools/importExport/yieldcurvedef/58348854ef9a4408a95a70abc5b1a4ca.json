@@ -1,1 +1,0 @@
-{"id": "58348854ef9a4408a95a70abc5b1a4ca", "name": "USD-AR", "marketSet": "DEFAULT", "currency": "USD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

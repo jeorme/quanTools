@@ -1,1 +1,0 @@
-{"id": "f270d33eeab3431ebb66ddb6a75b3231", "name": "USD-QA", "marketSet": "DEFAULT", "currency": "USD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

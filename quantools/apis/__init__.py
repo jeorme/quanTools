@@ -1,7 +1,6 @@
 from flask_restplus import Api
 
 from .rnn import api as rnn
-from .pricer import api as pricer
 from .trade import api as trade
 from .timeseries import api as timeseries
 from .bucket import api as bucket

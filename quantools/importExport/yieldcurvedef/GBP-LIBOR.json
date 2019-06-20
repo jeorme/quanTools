@@ -1,1 +1,0 @@
-{"id": "$id/GBP-LIBOR", "name": "GBP-LIBOR", "currency": "GBP", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

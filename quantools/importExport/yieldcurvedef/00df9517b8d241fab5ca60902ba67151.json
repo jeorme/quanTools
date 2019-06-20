@@ -1,1 +1,0 @@
-{"id": "00df9517b8d241fab5ca60902ba67151", "name": "HKDDISC", "marketSet": "DEFAULT", "currency": "HKD", "switchDates": [0, 19], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

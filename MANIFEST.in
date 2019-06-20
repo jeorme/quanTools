@@ -1,4 +1,3 @@
 recursive-include quantools/apis *
-recursive-include quantools/importExport *
-recursive-include quantools/pricer *
 recursive-include quantools/timeseries *
+recursive-include quantools/RNN *

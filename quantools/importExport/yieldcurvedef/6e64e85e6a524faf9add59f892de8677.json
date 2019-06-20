@@ -1,1 +1,0 @@
-{"id": "6e64e85e6a524faf9add59f892de8677", "name": "EUR-PT", "marketSet": "DEFAULT", "currency": "EUR", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

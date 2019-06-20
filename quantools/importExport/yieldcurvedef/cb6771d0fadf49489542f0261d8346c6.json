@@ -1,1 +1,0 @@
-{"id": "cb6771d0fadf49489542f0261d8346c6", "name": "CAD-CA", "marketSet": "DEFAULT", "currency": "CAD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

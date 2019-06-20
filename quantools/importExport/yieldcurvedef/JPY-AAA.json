@@ -1,1 +1,0 @@
-{"id": "$id/JPY-AAA", "name": "JPY-AAA", "currency": "JPY", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

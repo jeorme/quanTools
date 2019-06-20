@@ -1,1 +1,0 @@
-{"id": "98ce68442d434f05bb8c266626742bfe", "name": "CHFAMQL", "marketSet": "DEFAULT", "currency": "CHF", "switchDates": [0, 22], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

@@ -1,1 +1,0 @@
-{"id": "$id/CAD_BS", "name": "CAD_BS", "currency": "CAD", "switchDates": [0, 5], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

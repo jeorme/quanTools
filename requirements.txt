@@ -10,10 +10,10 @@ panda==0.3.1
 ibm-cos-sdk==2.4.4
 statsmodels==0.9.0
 Keras==2.2.4
-Quandl==3.4.8
 matplotlib==2.2.4
 scikit-learn
 flask_apispec
 tensorflow==1.5.0
+eikon
 dist/quantitativeTool-1.0.0.tar.gz
 

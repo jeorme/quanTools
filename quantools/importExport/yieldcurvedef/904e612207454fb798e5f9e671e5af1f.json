@@ -1,1 +1,0 @@
-{"id": "904e612207454fb798e5f9e671e5af1f", "name": "USD_DISC", "marketSet": "DEFAULT", "currency": "USD", "switchDates": [0, 21], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

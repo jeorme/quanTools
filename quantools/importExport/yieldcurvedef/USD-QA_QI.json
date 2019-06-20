@@ -1,1 +1,0 @@
-{"id": "$id/USD-QA_QI", "name": "USD-QA_QI", "currency": "USD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}
