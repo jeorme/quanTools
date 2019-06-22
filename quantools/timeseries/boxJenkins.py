@@ -35,7 +35,11 @@ def estimateD(data,maxD=5,log=True,tol=0.01):
 
 def estimateP(data,maxP=20,log=False,tol=0.01):
     acfVal = acf(data,nlags=maxP)
-    return p
+    return None
+
+def estimateQ(data,maxP=20,log=False,tol=0.01):
+    acfVal = acf(data,nlags=maxP)
+    return None
 
 def boxjenkins(data, log=False):
     """
