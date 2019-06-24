@@ -1,5 +1,7 @@
 import numpy as np
-from statsmodels.tsa.stattools import adfuller, acf
+from statsmodels.tsa.stattools import adfuller, acf, pacf
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+import matplotlib.pyplot as plt
 
 from quantools.timeseries.generateTS import generateArma
 
@@ -34,12 +36,26 @@ def estimateD(data,maxD=5,log=True,tol=0.01):
     return d
 
 def estimateP(data,maxP=20,log=False,tol=0.01):
-    acfVal = acf(data,nlags=maxP)
-    return None
+    acfVal = pacf(data, nlags=maxP, alpha=0.01)
+    pVal = 0
+    for index in range(len(acfVal[1])):
+        IC = acfVal[1][index]
+        if log:
+            print("IC at level " + str(index) + " : " + str(IC))
+        if 0 < IC[0] or 0 > IC[1]:
+            pVal = index
+    return min(pVal, maxP)
 
-def estimateQ(data,maxP=20,log=False,tol=0.01):
-    acfVal = acf(data,nlags=maxP)
-    return None
+def estimateQ(data,maxP=20,log=False):
+    acfVal = acf(data,nlags=maxP,alpha=0.01,qstat=True)
+    pVal = 0
+    for index in range(len(acfVal[1])):
+        IC = acfVal[1][index]
+        if log:
+            print("IC at level "+str(index)+" : "+str(IC))
+        if 0 < IC[0] or 0 > IC[1]:
+            pVal = index
+    return min(pVal,maxP)
 
 def boxjenkins(data, log=False):
     """
@@ -58,5 +74,9 @@ def boxjenkins(data, log=False):
     p = estimateQ(data,maxP=MAX_P,log=log)
 
 if __name__=="__main__":
-    data = generateArma(np.array([0]), np.array([.1]), 100)
-    print(estimateD(data))
+    data = generateArma(np.array([0]), np.array([.1,.2]), 1000)
+    print(estimateQ(data,log=False))
+    print(estimateP(data,log=False))
+    plot_acf(data,lags=10)
+    plot_pacf(data,lags=10)
+    plt.show()
