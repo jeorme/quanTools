@@ -1,1 +1,0 @@
-{"id": "49b77c25f9b944bc98e45036b15738f0", "name": "CAD-CORRA", "marketSet": "DEFAULT", "currency": "CAD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

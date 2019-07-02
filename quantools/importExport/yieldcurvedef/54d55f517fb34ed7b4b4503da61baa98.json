@@ -1,1 +1,0 @@
-{"id": "54d55f517fb34ed7b4b4503da61baa98", "name": "USD-LIBOR", "marketSet": "DEFAULT", "currency": "USD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

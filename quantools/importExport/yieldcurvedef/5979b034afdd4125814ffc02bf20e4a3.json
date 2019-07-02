@@ -1,1 +1,0 @@
-{"id": "5979b034afdd4125814ffc02bf20e4a3", "name": "ZAR_JIBOR", "marketSet": "DEFAULT", "currency": "ZAR", "switchDates": [0, 16], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

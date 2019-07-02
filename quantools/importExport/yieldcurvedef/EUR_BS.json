@@ -1,1 +1,0 @@
-{"id": "$id/EUR_BS", "name": "EUR_BS", "currency": "EUR", "switchDates": [0, 15], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

@@ -1,1 +1,0 @@
-{"id": "$id/ZAR_JIBOR", "name": "ZAR_JIBOR", "currency": "ZAR", "switchDates": [0, 16], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

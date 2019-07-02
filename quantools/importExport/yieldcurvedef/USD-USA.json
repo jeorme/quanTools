@@ -1,1 +1,0 @@
-{"id": "$id/USD-USA", "name": "USD-USA", "currency": "USD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

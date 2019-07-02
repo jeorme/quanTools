@@ -1,1 +1,0 @@
-{"id": "b6007330333f4f3b83f680b3c9cf8264", "name": "GBP-BBB", "marketSet": "DEFAULT", "currency": "GBP", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

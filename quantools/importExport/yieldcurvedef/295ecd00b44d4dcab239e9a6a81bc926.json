@@ -1,1 +1,0 @@
-{"id": "295ecd00b44d4dcab239e9a6a81bc926", "name": "YYY_DISC", "marketSet": "DEFAULT", "currency": "YYY", "switchDates": [0, 17], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

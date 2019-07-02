@@ -1,1 +1,0 @@
-{"id": "e72e65126f09483d8874c0658a8e98dd", "name": "JPY-MUTAN", "marketSet": "DEFAULT", "currency": "JPY", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

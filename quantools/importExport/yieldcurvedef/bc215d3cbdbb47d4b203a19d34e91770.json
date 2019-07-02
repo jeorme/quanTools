@@ -1,1 +1,0 @@
-{"id": "bc215d3cbdbb47d4b203a19d34e91770", "name": "USD-CH", "marketSet": "DEFAULT", "currency": "USD", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

@@ -1,1 +1,0 @@
-{"id": "1e91d4e11c014082b106c28446b54fa2", "name": "CLPGOV", "marketSet": "DEFAULT", "currency": "CLP", "switchDates": [0, 9], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

@@ -1,1 +1,0 @@
-{"id": "$id/USD_DISC", "name": "USD_DISC", "currency": "USD", "switchDates": [0, 21], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

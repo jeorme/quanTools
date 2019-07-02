@@ -1,1 +1,0 @@
-{"id": "e1e47d870f0c4d78b7ba222a739b5eda", "name": "AUDOIS", "marketSet": "DEFAULT", "currency": "AUD", "switchDates": [0, 22], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

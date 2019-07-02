@@ -1,1 +1,0 @@
-{"id": "45319181f4fb4484b753322e309f2ebf", "name": "EURAMME", "marketSet": "DEFAULT", "currency": "EUR", "switchDates": [0, 22], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["flat", "linear", "flat"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

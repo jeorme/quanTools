@@ -1,1 +1,0 @@
-{"id": "$id/GBP-GB_TH", "name": "GBP-GB_TH", "currency": "GBP", "switchDates": [], "interpolationVariables": ["zeroCouponRate"], "interpolationMethods": ["linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}

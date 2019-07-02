@@ -1,1 +1,0 @@
-{"id": "da7b883d315b4913949dde7482da9ec3", "name": "TRY_LIBOR", "marketSet": "DEFAULT", "currency": "TRY", "switchDates": [0, 11], "interpolationVariables": ["zeroCouponRate", "zeroCouponRate", "zeroCouponRate"], "interpolationMethods": ["linear", "linear", "linear"], "zeroCouponFormula": "exponential", "zeroCouponBasis": "ACT/365.FIXED"}
