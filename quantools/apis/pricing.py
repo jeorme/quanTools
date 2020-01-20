@@ -30,8 +30,14 @@ class Pricing(Resource):
         foreignRate = content["ForeignRate"]
         domesticRate = content["DomesticRate"]
         fixedAmount = content["fixedAmount"]
+        optionType = content["optionType"]
+        Spot = content["Spot"]
+        Strike = content["Strike"]
+        Time = content["Time"]
+        timeToSettle = content["timeToSettle"]
+        timeToSettle = content["timeToSettle"]
         # define model
-        return jsonify({"total param":foreignRate})
+        return jsonify({"NPV":foreignRate})
 
 @api.route('/normalCdf')
 class normalCDF(Resource):
