@@ -7,7 +7,7 @@ import pandas as pd
 from flask_restplus import Namespace,Resource, fields
 api = Namespace('pricing', 'window barrier')
 
-@api.route('/windowBarrier')
+@api.route('/pricing/windowBarrier')
 class Pricing(Resource):
     @api.response(200,"Success")
     @api.expect(api.model("data",{"ForeignRate" : fields.Float,"DomesticRate" : fields.Float,"fixedAmount": fields.Float,
@@ -39,7 +39,7 @@ class Pricing(Resource):
         # define model
         return jsonify({"NPV":foreignRate})
 
-@api.route('/normalCdf')
+@api.route('/pricing/normalCdf')
 class normalCDF(Resource):
     @api.response(200,"Success")
     @api.expect(api.model("input",{"u" : fields.Float}))
@@ -54,7 +54,7 @@ class normalCDF(Resource):
         # define model
         return jsonify({"normal cumulative":cdf})
 
-@api.route('/biNormalCdf')
+@api.route('/pricing/biNormalCdf')
 class biNormalCDF(Resource):
     @api.response(200,"Success")
     @api.expect(api.model("input",{"x" : fields.Float,"y" : fields.Float,"rho" : fields.Float,}))
