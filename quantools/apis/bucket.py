@@ -19,8 +19,8 @@ class Buckets(Resource):
         :return: list of bucket name
         """
         resource = ibm_boto3.resource('s3',
-                                      ibm_api_key_id="emEo1VS5H2EOk51A80O_fy2VlwDjaAt0WUSEJueCPtKx",
-                                      ibm_service_instance_id="crn:v1:bluemix:public:cloud-object-storage:global:a/72e640662b324e26b6e6c571a681ddf2:bc719890-69ba-4422-a180-4329f613e720::",
+                                      ibm_api_key_id="W4_X08wtFbojnNSXlYA4KNBh0nt0uaFwt3Nb5oGpl44O",
+                                      ibm_service_instance_id="crn:v1:bluemix:public:cloud-object-storage:global:a/72e640662b324e26b6e6c571a681ddf2:1475af13-42e4-42d2-bbf7-ebd7b626df47::",
                                       ibm_auth_endpoint="https://iam.cloud.ibm.com/identity/token",
                                       config=Config(signature_version='oauth'),
                                       endpoint_url="https://s3.eu-de.cloud-object-storage.appdomain.cloud/")
@@ -41,8 +41,8 @@ class Bucket(Resource):
         :param id: id of the bucket
         """
         resource = ibm_boto3.resource('s3',
-                                      ibm_api_key_id="emEo1VS5H2EOk51A80O_fy2VlwDjaAt0WUSEJueCPtKx",
-                                      ibm_service_instance_id="crn:v1:bluemix:public:cloud-object-storage:global:a/72e640662b324e26b6e6c571a681ddf2:bc719890-69ba-4422-a180-4329f613e720::",
+                                      ibm_api_key_id="W4_X08wtFbojnNSXlYA4KNBh0nt0uaFwt3Nb5oGpl44O",
+                                      ibm_service_instance_id="crn:v1:bluemix:public:cloud-object-storage:global:a/72e640662b324e26b6e6c571a681ddf2:1475af13-42e4-42d2-bbf7-ebd7b626df47::",
                                       ibm_auth_endpoint="https://iam.cloud.ibm.com/identity/token",
                                       config=Config(signature_version='oauth'),
                                       endpoint_url="https://s3.eu-de.cloud-object-storage.appdomain.cloud/")
@@ -57,10 +57,10 @@ class Bucket(Resource):
             :param id: id of the bucket
         """
         resource = ibm_boto3.resource('s3',
-                                     ibm_api_key_id="emEo1VS5H2EOk51A80O_fy2VlwDjaAt0WUSEJueCPtKx",
-                                     ibm_service_instance_id="crn:v1:bluemix:public:cloud-object-storage:global:a/72e640662b324e26b6e6c571a681ddf2:bc719890-69ba-4422-a180-4329f613e720::",
-                                     ibm_auth_endpoint="https://iam.cloud.ibm.com/identity/token",
-                                     config=Config(signature_version='oauth'),
-                                     endpoint_url="https://s3.eu-de.cloud-object-storage.appdomain.cloud/")
+                                      ibm_api_key_id="W4_X08wtFbojnNSXlYA4KNBh0nt0uaFwt3Nb5oGpl44O",
+                                      ibm_service_instance_id="crn:v1:bluemix:public:cloud-object-storage:global:a/72e640662b324e26b6e6c571a681ddf2:1475af13-42e4-42d2-bbf7-ebd7b626df47::",
+                                      ibm_auth_endpoint="https://iam.cloud.ibm.com/identity/token",
+                                      config=Config(signature_version='oauth'),
+                                      endpoint_url="https://s3.eu-de.cloud-object-storage.appdomain.cloud/")
         val = resource.Bucket(id).delete()
         return jsonify(jsonify(val).status)

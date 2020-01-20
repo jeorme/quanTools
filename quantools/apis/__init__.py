@@ -5,6 +5,7 @@ from .trade import api as trade
 from .timeseries import api as timeseries
 from .bucket import api as bucket
 from .cloudObject import api as cloudObject
+from .pricing import api as pricing
 
 
 api = Api(
@@ -18,4 +19,5 @@ api.add_namespace(bucket)
 api.add_namespace(cloudObject)
 api.add_namespace(timeseries)
 api.add_namespace(rnn)
+api.add_namespace(pricing)
 
