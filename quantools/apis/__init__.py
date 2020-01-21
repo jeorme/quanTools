@@ -1,12 +1,10 @@
 from flask_restplus import Api
 
 from .rnn import api as rnn
-from .trade import api as trade
 from .timeseries import api as timeseries
-from .bucket import api as bucket
-from .cloudObject import api as cloudObject
 from .pricing import api as pricing
-
+from .interpolation import api as interpolation
+from .calibration import api as calibration
 
 api = Api(
     title='Quantitative tools',
@@ -15,9 +13,9 @@ api = Api(
     # All API metadatas
 )
 
-api.add_namespace(bucket)
-api.add_namespace(cloudObject)
 api.add_namespace(timeseries)
 api.add_namespace(rnn)
 api.add_namespace(pricing)
+api.add_namespace(interpolation)
+api.add_namespace(calibration)
 
