@@ -13,7 +13,7 @@ Keras==2.2.4
 matplotlib==2.2.4
 scikit-learn
 flask_apispec
-tensorflow==1.5.0
+tensorflow==1.15.2
 eikon
 dist/quantitativeTool-1.0.0.tar.gz
 
