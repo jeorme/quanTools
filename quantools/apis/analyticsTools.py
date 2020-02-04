@@ -2,7 +2,6 @@ import json
 
 from flask import request, jsonify
 from datetime import datetime
-import QuantLib as ql
 from flask_restplus import Namespace,Resource, fields
 from quantools.analyticsTools.analyticsTools import yearFraction
 api = Namespace('analytics', 'Tools')
@@ -19,9 +18,7 @@ class yearFractionTools(Resource):
         """
         content = request.get_json()
         startDate = datetime.strptime(content["startDate"],"%Y-%m-%d")
-        startDate = ql.Date(startDate.day,startDate.month,startDate.year)
         endDate = datetime.strptime(content["endDate"],"%Y-%m-%d")
-        endDate = ql.Date(endDate.day,endDate.month,endDate.year)
         basis = content["basis"]
         yf = yearFraction(startDate,endDate,basis)
         # define model
@@ -33,7 +30,7 @@ class yearFractionTools(Resource):
         get service to have the enum used for the basis
         :return: lit of basis enum
         """
-        voc=["ACT/365.FIXED","ACT/360","30/360","ACT/ACT","BUS252","ACT29EXC"]
+        voc=["ACT/365.FIXED","ACT/365.25","ACT/360","ACT/364"]
         return jsonify(voc)
 
 
