@@ -10,7 +10,7 @@ from quantools.analyticsTools.analyticsTools import yearFraction
 class FxExpiryfxVolInfo:
     def __init__(self,forwardStrike, premiumAdjustmentIndicator,
                        deltaConventionAdjustment, sqrtVolYearFraction,
-                       dfDom,volId,interpolationMethod="linear",
+                       dfDom,volId,interpolationMethod="LINEAR",
                        interpSpace = "strike", atmVol = 0.1 ):
         self.forwardStrike = forwardStrike
         self.premiumAdjustmentIndicator = premiumAdjustmentIndicator #+1 premium adjusted, 0 not premium adjusted
@@ -58,7 +58,7 @@ def fxCalibrationResultsDisplay(smileCounter, fxVolInfo, expirySmileCurve, surfa
         surface[3 + jump][strikeColumn] = strike
         surface[4 + jump][strikeColumn] = expirySmileCurve[2][strikeColumn]
         surface[5 + jump][strikeColumn] = expirySmileCurve[5][strikeColumn]
-        surface[6 + jump][strikeColumn] = 0 if strike == 0.0 else math.log(strike / fxVolInfo.forwardStrike)
+        surface[6 + jump][strikeColumn] = 0 if strike == 0.0 else math.log(abs(strike / fxVolInfo.forwardStrike))
 
     lastColumn = surface.shape[1] - 1  # Cell were we store ATM index
 
@@ -332,8 +332,8 @@ def computeInterpSpaceParam(fxVolInfo, expirySmileCurve):
         expirySmileCurve[0][strikeColumn] = computePointInterpSpaceParamFromDeltaOrStrike(fxVolInfo, expirySmileCurve[1][strikeColumn], expirySmileCurve[3][strikeColumn])
 
 def computePointInterpSpaceParamFromDeltaOrStrike(fxVolInfo, strike, delta):
-    if fxVolInfo.interpSpace == "deltaCall" or fxVolInfo.interpSpace == "deltaPut":
-        callPutIndicator = -1 if fxVolInfo.interpSpace=="deltaPut" else 1
+    if fxVolInfo.interpSpace == "DELTA_CALL" or fxVolInfo.interpSpace == "DELTA_PUT":
+        callPutIndicator = -1 if fxVolInfo.interpSpace=="DELTA_PUT" else 1
         if callPutIndicator != 1 if delta>= 0 else -1:
             return getDeltaFromParity(fxVolInfo.forwardStrike, fxVolInfo.premiumAdjustmentIndicator, fxVolInfo.deltaConventionAdjustment, delta, callPutIndicator, strike)
         return delta
@@ -361,7 +361,7 @@ def exchange(expirySmileCurve, row, colIndex1, colIndex2):
     expirySmileCurve[row][colIndex2] = temp
 
 def computeInterpolationHelperParams(currentPoint, interpMethod):
-    if interpMethod == "cubicSpline":
+    if interpMethod == "CUBIC_SPLINE":
         computeSecondDerivativeHelper(currentPoint[6][:], currentPoint[0][:], currentPoint[2][:], 0, 0, currentPoint[5][:])
 
 def computeSecondDerivativeHelper(helper, points, values, lowerConstraint, upperConstraint, secondDerivative):
@@ -378,7 +378,7 @@ def computeSecondDerivativeHelper(helper, points, values, lowerConstraint, upper
     p1 = points[1]
     v0 = values[0]
     v1 = values[1]
-    for i in range(1,len(values)):
+    for i in range(1,len(values)-1):
         p2 = points[i + 1]
         v2 = values[i + 1]
         backwardDiff = p1 - p0
@@ -500,9 +500,9 @@ class CommonFxSmileInputs:
         self.sqrtVolYearFraction = 0
         self.forwardStrike = 1
         self.userTargetPoint = 0
-        self.volInterpolationMethod  = "linear"
-        self.volExtrapolBefore = "flat"
-        self.volExtrapolAfter = "flat"
+        self.volInterpolationMethod  = "LINEAR"
+        self.volExtrapolBefore = "FLAT"
+        self.volExtrapolAfter = "FLAT"
         self.smileConventionInput = "strike"
         self.deltaConvAdjInput = 1.0
         self.leeFactor = 1.0
@@ -524,7 +524,7 @@ def getVolatilityFromSmile(smilePoint, commonInput, volInterpolationMethod, inde
     if smileAxis[indexBefore + 1] == smilePoint:
         return volValues[indexBefore + 1]
 
-    if volInterpolationMethod == "cubicSpline":
+    if volInterpolationMethod == "CUBIC_SPLINE":
         secondDerivatives = commonInput.secondDerivatives
         return cubicSplineInterpolation(smilePoint, smileAxis[indexBefore], smileAxis[indexBefore + 1], volValues[indexBefore], volValues[indexBefore + 1], secondDerivatives[indexBefore], secondDerivatives[indexBefore + 1])
 
@@ -544,14 +544,14 @@ def getIndexBefore(pointFloorIndex, listLength):
 	if pointFloorIndex == -1:
 		return 0
 	if pointFloorIndex == -2:
-		return math.max(0, listLength - 2)
+		return max(0, listLength - 2)
 	return pointFloorIndex
 
 
 def getInterpolatedValue(interpolationMethod, point, pointBefore, pointAfter, valueBefore, valueAfter):
-    if interpolationMethod == "linear":
+    if interpolationMethod == "LINEAR":
         return linearInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter)
-    if interpolationMethod == "flat":
+    if interpolationMethod == "FLAT":
             return flatInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter)
     if interpolationMethod == "flatRight":
         return flatRightInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter)
@@ -607,8 +607,8 @@ def convertPillarLeeExtrapolation(pillar, deltaAdj, smileConvention, forwardStri
         return math.sqrt(abs(math.log(pillar/forwardStrike )))
     if smileConvention == "logMoneyness":
         return math.sqrt(abs(pillar))
-    if smileConvention == "deltaCall" or smileConvention == "deltaPut":
-        smileVal = -1 if smileConvention == "deltaPut" else 1
+    if smileConvention == "DELTA_CALL" or smileConvention == "DELTA_PUT":
+        smileVal = -1 if smileConvention == "DELTA_PUT" else 1
         return getLeeVolatilityForDelta(pillar, sqrtVolYearFraction, deltaAdj,smileVal , isPremium)
 
 
@@ -659,7 +659,7 @@ def computeStrategiesSolverJacobianFunction(problemDimension, currentPoint, comm
             diffPrice = priceOneCalibrationInstrument(currentPoint, commonInputs, instrumentLineToFit) - instrumentLineToFit[5]
             jacobian[i][j] = (diffPrice - fx[i]) / dx
 
-        updateSolvingPointOneCoordinate(currentPoint, nbStrikesByExpiry + j, -dx, commonInputs, instrumentsToFit)
+        updateSolvingPointOneCoordinate(currentPoint, nbStrikesByExpiry + j, -dx, commonInputs, instrumentsToFit,nbStrikesByExpiry)
 
 def luDecompostionByCroutAlgorithm(systemDimension, inAoutLu, TINY):
 
@@ -721,7 +721,7 @@ def solveLinearSystemFromCroutLUDecomposition(systemDimension, lu, secondMemberA
         #When ii is set to a positive value, it will become the
         #index of the first nonvanishing element of b. We now do the forward substitution. The
         #only new wrinkle is to unscramble the permutationas we go.
-        ip = lu[systemDimension][i]
+        ip = int(lu[systemDimension][i])
         sum = secondMemberAndResult[ip]
         secondMemberAndResult[ip] = secondMemberAndResult[i]
         if ii != 0:
