@@ -110,7 +110,7 @@ def computeDeltaFromStrike(strike, bsStdDev, forward, deltaConventionFactor, cal
 def getBSCallPutPricePlusDCoefficient(forward, strike, bsStdDev):
     if strike == 0: # when strike is near zero, N(d1) is equal to 1
         return getPlusInfinityValue()
-    return (math.log(forward/ strike) + 0.5 * bsStdDev * bsStdDev) / bsStdDev
+    return (math.log(abs(forward/ strike)) + 0.5 * bsStdDev * bsStdDev) / bsStdDev
 
 def getPlusInfinityValue():
     return 1e306
@@ -295,7 +295,7 @@ def getPremiumAdjustedDeltaKernelBrent(x, optionDefinition):
 def strikeFromMaximumAdjustedDelta(x, option):
 	bsStdDev = option.stdDeviation
 	d2 = getBSCallPutPriceMinusDCoefficient(1, x, bsStdDev)
-	bsStdDev * norm.cdf(d2) - 1/math.sqrt(2*math.pi)  * math.exp(-0.5 * d2 * d2)
+	return bsStdDev * norm.cdf(d2) - 1/math.sqrt(2*math.pi)  * math.exp(-0.5 * d2 * d2)
 
 def impliedStrikeFromDeltaPremiumAdjusted(x, stdDeviation, callPutIndicator):
 	bsDMinus = getBSCallPutPriceMinusDCoefficient(1, x, stdDeviation)
@@ -304,7 +304,7 @@ def impliedStrikeFromDeltaPremiumAdjusted(x, stdDeviation, callPutIndicator):
 def getBSCallPutPriceMinusDCoefficient(forward, strike, bsStdDev):
 	if (strike == 0): # when strike is near zero, N(d1) is equal to 1
 		return getPlusInfinityValue()
-	return (math.log(forward / strike) - 0.5 * bsStdDev * bsStdDev) / bsStdDev
+	return (math.log(abs(forward / strike)) - 0.5 * bsStdDev * bsStdDev) / bsStdDev
 
 
 
@@ -427,7 +427,7 @@ def fitSmileForFxVolMarketWithMultiDimNewtonSolver(calibrationInstruments, fxVol
 
 def computeFxVolatilityNextGuess(currentPoint, incrementArray, commonInputs, effectiveProblemDimension, instrumentsToFit,nbStrikesByExpiry):
    for nextXi in range(effectiveProblemDimension):
-        updateSolvingPointOneCoordinate(currentPoint, nbStrikesByExpiry + nextXi, incrementArray[nextXi], commonInputs, instrumentsToFit)
+        updateSolvingPointOneCoordinate(currentPoint, nbStrikesByExpiry + nextXi, incrementArray[nextXi], commonInputs, instrumentsToFit,nbStrikesByExpiry)
    computeInterpSpaceParam(commonInputs, currentPoint)
    computeInterpolationHelperParams(currentPoint, commonInputs.interpMethod)
 
@@ -750,9 +750,9 @@ def updateOneSmileAxisElement(calibrationPoint, commonInputs, constraintLine, in
     callPutIndicator = constraintLine[1] #used also to determine if it is a fitting instrument
     if callPutIndicator != 0: #to be repriced
         vol = constraintLine[5] #atmPlusHalfSignedRiskReversal
-        indexLineOfFittingParam = constraintLine[6]
+        indexLineOfFittingParam = int(constraintLine[6])
         vol += instrumentsToFit[indexLineOfFittingParam][6]  #add bf
-        strikeColumnIndexInTheSmile = constraintLine[3]
+        strikeColumnIndexInTheSmile = int(constraintLine[3])
         deltaConstraint = constraintLine[4]
         calibrationPoint[1][ strikeColumnIndexInTheSmile] = computeStrikeFromDelta(callPutIndicator * abs(deltaConstraint), vol * commonInputs.sqrtYfExpiryAsOf,
                 commonInputs.forwardStrike, commonInputs.deltaConventionAdjustment, callPutIndicator, commonInputs.premiumAdjustmentIndicator)
@@ -796,8 +796,8 @@ def findRoot(function, lowerBound, upperBound, context):
     a  = lowerBound
     b  = upperBound
     c  = upperBound
-    fa = float(function(a, context))
-    fb = float(function(b, context))
+    fa = function(a, context)
+    fb = function(b, context)
 
     #check that bounds definitely include solution
     if ((fa > 0 and fb > 0) or (fa < 0) and (fb < 0)):
