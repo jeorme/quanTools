@@ -22,6 +22,11 @@ class FxExpiryfxVolInfo:
         self.atmVol = atmVol
         self.volId = volId
 
+class OptionDesc:
+    def __init__(self,callPutIndicator, bsStdDev, delta):
+	    self.callPutIndicator = callPutIndicator
+	    self.stdDeviation = bsStdDev
+	    self.delta = delta
 
 
 ##utilisties
@@ -71,18 +76,6 @@ def outputATMIndex(expirySmileCurve):
 def getJacobianSize(nbStrikesByExpiry, isSmileBroker):
     if isSmileBroker:
         return (nbStrikesByExpiry - 1) / 2
-    return 0
-
-
-def getInstrumentTypeEnum(instrumentType):
-    if instrumentType=="call":
-        return 1
-    if instrumentType=="put":
-        return -1
-    if instrumentType=="strangle":
-        return 2
-    if instrumentType== "butterfly":
-        return 3
     return 0
 
 ##utilities
@@ -194,25 +187,25 @@ def getExpirySmile(foreignCurrency, domesticCurrency, nbStrikesByExpiry, smileLi
         getBSVolFromBfRr(++strategyRank, foreignCurrency, domesticCurrency, fxVolInfo,smileLine["butterflyQuoteIds"][i],smileLine["riskReversalQuoteIds"][i],marketData["fxVolatilityQuotes"],expirySmileCurve, calibrationInstruments,nbStrikesByExpiry)
 
 
-    #computeInterpSpaceParam(fxVolInfo, expirySmileCurve)
-    #nbStrikeInTheSmile = calibrationInstruments[0][0]
-    #resize(expirySmileCurve, height(expirySmileCurve), nbStrikeInTheSmile)
-    #insertionSortExpirySmileStrike(nbStrikeInTheSmile, expirySmileCurve)
+    computeInterpSpaceParam(fxVolInfo, expirySmileCurve)
+    nbStrikeInTheSmile = int(calibrationInstruments[0][0])
+    expirySmileCurve.reshape(expirySmileCurve.shape[0], nbStrikeInTheSmile)
+    insertionSortExpirySmileStrike(nbStrikeInTheSmile, expirySmileCurve)
 
-    #if isSmileB:
-    #    jacRepo = matrix(jacobianSize + 3, jacobianSize, 0.0) # 2 for LU pivoting + 1 for f0 = fct() to solve
-    #    effectiveProblemDimension = getCalibrationProblemDimension(smileStrategies, isOtmDefined)
-    #    idLineFromSmile = matrixLine(expirySmileCurve, 4)
-    #    for strikeColumn =0; strikeColumn < nbStrikeInTheSmile; strikeColumn ++:
-    #        idIndex = idLineFromSmile[strikeColumn]
-    #        for i = 0;i < nbStrikeInTheSmile;i ++:
-    #            IdConstraint = calibrationInstruments[i][2]
-    #                if idIndex == IdConstraint:
-    #                    calibrationInstruments[i][3] = strikeColumn
-    #                    break
-    #    fitFxVolatilitySmile(calibrationInstruments, fxVolInfo, fxVolTolerance, effectiveProblemDimension, expirySmileCurve,jacRepo)
-    #else:
-    #    computeInterpolationHelperParams(expirySmileCurve, fxVolInfo.interpMethod)
+    if isSmileB:
+        jacRepo = np.zeros((int(jacobianSize + 3), int(jacobianSize))) # 2 for LU pivoting + 1 for f0 = fct() to solve
+        effectiveProblemDimension = len(smileLine["butterflyQuoteIds"])
+        idLineFromSmile = expirySmileCurve[4][:]
+        for strikeColumn in range(nbStrikeInTheSmile):
+            idIndex = idLineFromSmile[strikeColumn]
+            for i in range(nbStrikeInTheSmile):
+                IdConstraint = calibrationInstruments[i][2]
+                if idIndex == IdConstraint:
+                    calibrationInstruments[i][3] = strikeColumn
+                    break
+        fitFxVolatilitySmile(calibrationInstruments, fxVolInfo, fxVolTolerance, effectiveProblemDimension, expirySmileCurve,jacRepo,nbStrikesByExpiry)
+    else:
+        computeInterpolationHelperParams(expirySmileCurve, fxVolInfo.interpMethod)
 
 def getQuote(marketData,volId,quoteId):
     for fxVolQuote in marketData:
@@ -231,17 +224,17 @@ def getBSVolFromBfRr(strategyRank, foreignCurrency, domesticCurrency, fxVolInfo,
             volMS, rr, 1, 3, expirySmileCurve, calibrationInstruments,nbStrikesByExpiry)
     priceMs += getFxOtmPointFromCallPutQuoteFromStrangle(fxVolInfo, -strategyRank, delta,
             volMS,  -rr, -1, 4, expirySmileCurve, calibrationInstruments,nbStrikesByExpiry)
-    #if strategy.butterfly.strategyConvention.target == "price":
-    #    constraintLine = calibrationInstruments[0][0] #current available line index
-    #    calibIntsLine = calibrationInstruments[nbStrikesByExpiry][0]
-    #    calibrationInstruments[nbStrikesByExpiry][0] = calibIntsLine + 1 # next avalaible line index
-    #    calibrationInstruments[constraintLine-1][6] = calibIntsLine  #index of fitting param line
-    #    calibrationInstruments[constraintLine-2][6] = calibIntsLine #index of fitting param line
-    #    calibrationInstruments[calibIntsLine][1] = callPutIndicator #constraint & callPut type of the first part of the strangle
-    #    calibrationInstruments[calibIntsLine][2] = getInstrumentTypeEnum (strategy.butterfly.strategyConvention.type) #fx instrument type
-    #    calibrationInstruments[calibIntsLine][5] = priceMs #target market price
-    #    calibrationInstruments[calibIntsLine][6] = bf #fx butterfly quote
-    #    calibrationInstruments[calibIntsLine][7] = expirySmileCurve[3][constraintLine-2] #delta of the strategy
+
+    constraintLine = int(calibrationInstruments[0][0]) #current available line index
+    calibIntsLine = int(calibrationInstruments[nbStrikesByExpiry][0])
+    calibrationInstruments[nbStrikesByExpiry][0] = calibIntsLine + 1 # next avalaible line index
+    calibrationInstruments[constraintLine-1][6] = calibIntsLine  #index of fitting param line
+    calibrationInstruments[constraintLine-2][6] = calibIntsLine #index of fitting param line
+    calibrationInstruments[calibIntsLine][1] = 1 #constraint & callPut type of the first part of the strangle
+    calibrationInstruments[calibIntsLine][2] =2
+    calibrationInstruments[calibIntsLine][5] = priceMs #target market price
+    calibrationInstruments[calibIntsLine][6] = bf #fx butterfly quote
+    calibrationInstruments[calibIntsLine][7] = expirySmileCurve[3][constraintLine-2] #delta of the strategy
 
 def getFxOtmPointFromCallPutQuoteFromStrangle(fxVolInfo, strategyRank, deltaValue, volMS, rr,callPutIndicator,
                                                strikeColumn, expirySmileCurve, calibrationInstruments,nbStrikesByExpiry):
@@ -284,14 +277,36 @@ def getBlackSpotPrice(forwardValue, strikeValue, bsStdDev, df, flavor):
 	return df * getBlackForwardPrice(forwardValue, strikeValue, bsStdDev, flavor)
 
 def computeStrikeFromAdjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator):
-	#delta = callPutIndicator * abs(delta) / deltaConventionFactor
-	#option = OptionDesc(callPutIndicator, bsStdDev, delta)
-	#if callPutIndicator == -1:
-#		return forward * newtonSolver1D(delta, 1, 1e-8, 10, getPremiumAdjustedDeltaKernel, option, "unused", "unused")
-#	kMax = computeStrikeFromUnadjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator) / forward
-#	kMin = findRoot(strikeFromMaximumAdjustedDelta, 0.1 * kMax, kMax, option)
-	#return forward * findRoot(getPremiumAdjustedDeltaKernelBrent, kMin, 5 * kMax, option)
-    return 100
+	delta = callPutIndicator * abs(delta) / deltaConventionFactor
+	option = OptionDesc(callPutIndicator, bsStdDev, delta)
+	if callPutIndicator == -1:
+		return forward * newtonSolver1D(delta, 1, 1e-8, 10, getPremiumAdjustedDeltaKernel, option, "unused", "unused")
+	kMax = computeStrikeFromUnadjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator) / forward
+	kMin = findRoot(strikeFromMaximumAdjustedDelta, 0.1 * kMax, kMax, option)
+	return forward * findRoot(getPremiumAdjustedDeltaKernelBrent, kMin, 5 * kMax, option)
+
+def getPremiumAdjustedDeltaKernel(x, optionDefinition, optional1, optional2):
+	return impliedStrikeFromDeltaPremiumAdjusted(x, optionDefinition.stdDeviation, optionDefinition.callPutIndicator)
+
+def getPremiumAdjustedDeltaKernelBrent(x, optionDefinition):
+	return impliedStrikeFromDeltaPremiumAdjusted(x, optionDefinition.stdDeviation, optionDefinition.callPutIndicator) - optionDefinition.delta
+
+
+def strikeFromMaximumAdjustedDelta(x, option):
+	bsStdDev = option.stdDeviation
+	d2 = getBSCallPutPriceMinusDCoefficient(1, x, bsStdDev)
+	bsStdDev * norm.cdf(d2) - 1/math.sqrt(2*math.pi)  * math.exp(-0.5 * d2 * d2)
+
+def impliedStrikeFromDeltaPremiumAdjusted(x, stdDeviation, callPutIndicator):
+	bsDMinus = getBSCallPutPriceMinusDCoefficient(1, x, stdDeviation)
+	return callPutIndicator * x * norm.cdf(callPutIndicator * bsDMinus)
+
+def getBSCallPutPriceMinusDCoefficient(forward, strike, bsStdDev):
+	if (strike == 0): # when strike is near zero, N(d1) is equal to 1
+		return getPlusInfinityValue()
+	return (math.log(forward / strike) - 0.5 * bsStdDev * bsStdDev) / bsStdDev
+
+
 
 
 def computeStrikeFromUnadjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator):
@@ -310,3 +325,552 @@ def getVanillaIntrinsicValue(forwardRate, strike, flavor):
 
 def computeBlackFormula(flavor, forwardRate, strike, cumulNormald1, volFactor, d1, stdNormald1, cumulNormald2):
 	return flavor * (-strike * cumulNormald2 + forwardRate * cumulNormald1) # keep this formula order for instability result issue
+
+
+def computeInterpSpaceParam(fxVolInfo, expirySmileCurve):
+    for strikeColumn in range(expirySmileCurve.shape[1]):
+        expirySmileCurve[0][strikeColumn] = computePointInterpSpaceParamFromDeltaOrStrike(fxVolInfo, expirySmileCurve[1][strikeColumn], expirySmileCurve[3][strikeColumn])
+
+def computePointInterpSpaceParamFromDeltaOrStrike(fxVolInfo, strike, delta):
+    if fxVolInfo.interpSpace == "deltaCall" or fxVolInfo.interpSpace == "deltaPut":
+        callPutIndicator = -1 if fxVolInfo.interpSpace=="deltaPut" else 1
+        if callPutIndicator != 1 if delta>= 0 else -1:
+            return getDeltaFromParity(fxVolInfo.forwardStrike, fxVolInfo.premiumAdjustmentIndicator, fxVolInfo.deltaConventionAdjustment, delta, callPutIndicator, strike)
+        return delta
+    if fxVolInfo.interpSpace == "strike":
+        return strike
+    if fxVolInfo.interpSpace == "logMoneyness":
+        return math.log(strike / fxVolInfo.forwardStrike)
+
+def insertionSortExpirySmileStrike(nbStrikeSmile, expirySmileCurve):
+    for strikeColumn in range(nbStrikeSmile):
+        for j in range(strikeColumn,0,-1):
+            if expirySmileCurve[0][j] < expirySmileCurve[0][j-1]:
+                reOrderingSmile(expirySmileCurve, j)
+
+def reOrderingSmile(expirySmileCurve, j):
+    exchange(expirySmileCurve, 0, j, j-1)
+    exchange(expirySmileCurve, 1, j, j-1)
+    exchange(expirySmileCurve, 2, j, j-1)
+    exchange(expirySmileCurve, 3, j, j-1)
+    exchange(expirySmileCurve, 4, j, j-1)
+
+def exchange(expirySmileCurve, row, colIndex1, colIndex2):
+    temp = expirySmileCurve[row][colIndex1]
+    expirySmileCurve[row][colIndex1] = expirySmileCurve[row][colIndex2]
+    expirySmileCurve[row][colIndex2] = temp
+
+def computeInterpolationHelperParams(currentPoint, interpMethod):
+    if interpMethod == "cubicSpline":
+        computeSecondDerivativeHelper(currentPoint[6][:], currentPoint[0][:], currentPoint[2][:], 0, 0, currentPoint[5][:])
+
+def computeSecondDerivativeHelper(helper, points, values, lowerConstraint, upperConstraint, secondDerivative):
+    secondDerivative[0] = lowerConstraint
+    if len(values) < 3:
+        for i in range(1,len(values)):
+            secondDerivative[i] = lowerConstraint
+        if len(secondDerivative) >= 2:
+            secondDerivative[len(values) - 1] = upperConstraint
+        return secondDerivative
+    # tri - diagonal system with dominant diagonal solving
+    helper[0] = lowerConstraint
+    p0 = points[0]
+    p1 = points[1]
+    v0 = values[0]
+    v1 = values[1]
+    for i in range(1,len(values)):
+        p2 = points[i + 1]
+        v2 = values[i + 1]
+        backwardDiff = p1 - p0
+        forwardDiff = p2 - p1
+        extendDiff = p2 - p0
+        sig = backwardDiff / extendDiff
+        p = sig * secondDerivative[i - 1] + 2.0
+        secondDerivative[i] = (sig - 1.0) / p
+        helper_i = (v2 - v1) / forwardDiff - (v1 - v0) / backwardDiff
+        helper[i] = (6.0 * helper_i / extendDiff - sig * helper[i - 1]) / p
+        p0 = p1
+        p1 = p2
+        v0 = v1
+        v1 = v2
+    secondDerivative[len(values) - 1] = upperConstraint
+    for  k in range(len(values) - 2,0,-1):
+        secondDerivative[k] = secondDerivative[k] * secondDerivative[k+1] + helper[k]
+    return secondDerivative
+
+def getCalibrationProblemDimension(smileLineStrategies):
+    effectiveProblemDimension = 0
+    for otmComponent  in smileLineStrategies.otm:
+        effectiveProblemDimension = effectiveProblemDimension + 1
+
+    return effectiveProblemDimension
+
+def fitFxVolatilitySmile(calibrationInstruments, fxVolInfo, fxVolTolerance, effectiveProblemDimension, calibrationPoint, jacRepo,nbStrikesByExpiry):
+    fitSmileForFxVolMarketWithMultiDimNewtonSolver(calibrationInstruments, fxVolInfo, fxVolTolerance, effectiveProblemDimension, calibrationPoint, jacRepo,nbStrikesByExpiry)
+
+def fitSmileForFxVolMarketWithMultiDimNewtonSolver(calibrationInstruments, fxVolInfo, fxVolTolerance, effectiveProblemDimension, calibrationPoint, jacRepo,nbStrikesByExpiry):
+    f0 = jacRepo[jacRepo.shape[0] - 1][:]
+    for k in range(50):
+        computeFxVolatilityNextGuess(calibrationPoint, f0, fxVolInfo, effectiveProblemDimension, calibrationInstruments,nbStrikesByExpiry)
+        computeStrategiesSolverFunction(calibrationPoint, fxVolInfo, calibrationInstruments, f0,nbStrikesByExpiry)
+        if getL1Norm(f0) <= fxVolTolerance:
+            break
+
+        if k == 0:
+            computeStrategiesSolverJacobianFunction(effectiveProblemDimension, calibrationPoint, fxVolInfo, calibrationInstruments, f0, jacRepo,nbStrikesByExpiry)
+            luDecompostionByCroutAlgorithm(effectiveProblemDimension, jacRepo, 1.0e-40)
+        for i in range(effectiveProblemDimension):
+            f0[i] = -f0[i]
+            solveLinearSystemFromCroutLUDecomposition(effectiveProblemDimension, jacRepo, f0)
+        if getL1Norm(f0) <= fxVolTolerance:
+            break
+
+def computeFxVolatilityNextGuess(currentPoint, incrementArray, commonInputs, effectiveProblemDimension, instrumentsToFit,nbStrikesByExpiry):
+   for nextXi in range(effectiveProblemDimension):
+        updateSolvingPointOneCoordinate(currentPoint, nbStrikesByExpiry + nextXi, incrementArray[nextXi], commonInputs, instrumentsToFit)
+   computeInterpSpaceParam(commonInputs, currentPoint)
+   computeInterpolationHelperParams(currentPoint, commonInputs.interpMethod)
+
+def computeStrategiesSolverFunction(currentPoint, commonInputs, instrumentsToFit, fx,nbStrikesByExpiry):
+    nextXi = 0
+    for i in range(nbStrikesByExpiry,instrumentsToFit.shape[0]):
+        instrumentLine = instrumentsToFit[i]
+        callPutIndicator = instrumentLine[1] # also used to know if it is a repricing instrument
+        if callPutIndicator != 0:
+            fx[nextXi] = priceOneCalibrationInstrument(currentPoint, commonInputs, instrumentLine) - instrumentLine[5]
+            nextXi +=1
+    return fx
+
+def priceOneCalibrationInstrument(calibrationPoint, commonInputs, instrumentLineToFit):
+    callPutIndicator = instrumentLineToFit[1]
+    delta = instrumentLineToFit[7]
+    strike = instrumentLineToFit[3]
+    interpSpaceVar = computePointInterpSpaceParamFromDeltaOrStrike(commonInputs, strike, delta)
+    price = priceCallPutFromSmile(commonInputs.forwardStrike, commonInputs.dfDom, commonInputs.sqrtYfExpiryAsOf,
+            commonInputs.interpMethod, calibrationPoint, strike, interpSpaceVar, callPutIndicator)
+    strike = instrumentLineToFit[4]
+    interpSpaceVar = computePointInterpSpaceParamFromDeltaOrStrike(commonInputs, strike, -delta)
+    price += priceCallPutFromSmile(commonInputs.forwardStrike, commonInputs.dfDom, commonInputs.sqrtYfExpiryAsOf,
+            commonInputs.interpMethod, calibrationPoint, instrumentLineToFit[4], interpSpaceVar, -callPutIndicator)
+    return price
+
+def priceCallPutFromSmile(forwardStrike, dfDom, sqrtYfExpiryAsOf, interpMethod, calibrationPoint, strike, interpSpaceVar, callPutIndicator):
+    commonInput = initComonFxSmileInput(calibrationPoint, forwardStrike, sqrtYfExpiryAsOf)
+    indexBefore = pointFloorIndex(commonInput.smileAxis, interpSpaceVar)
+
+    vol = getVolatilityFromSmile(interpSpaceVar, commonInput, interpMethod, indexBefore)
+    return getBlackSpotPrice(forwardStrike, strike, sqrtYfExpiryAsOf * vol, dfDom, callPutIndicator)
+
+def initComonFxSmileInput(calibrationPoint, forwardStrike, sqrtVolYearFraction):
+    commonInput = CommonFxSmileInputs()
+    commonInput.volValues = calibrationPoint[2][:]
+    commonInput.smileAxis = calibrationPoint[0][:]
+    commonInput.secondDerivatives = calibrationPoint[5][:]
+    commonInput.forwardStrike = forwardStrike
+    commonInput.sqrtVolYearFraction = sqrtVolYearFraction
+    return commonInput
+
+def pointFloorIndex(list, point):
+	if list[len(list)-1] < point:
+		return -2
+	return binary_search(list, point)
+
+
+def binary_search(Array, Search_Term):
+    n = len(Array)
+    L = 0
+    R = n - 1
+
+    while L <= R:
+        mid = math.floor((L + R) / 2)
+        if Array[mid] < Search_Term:
+            L = mid + 1
+        elif Array[mid] > Search_Term:
+            R = mid - 1
+        else:
+            return mid
+    return -1
+
+
+class CommonFxSmileInputs:
+    def __init__(self):
+        self.smileAxis = np.zeros((1,2))
+        self.volValues = np.zeros((1,2))
+        self.secondDerivatives =  np.zeros((1,2))
+        self.sqrtVolYearFraction = 0
+        self.forwardStrike = 1
+        self.userTargetPoint = 0
+        self.volInterpolationMethod  = "linear"
+        self.volExtrapolBefore = "flat"
+        self.volExtrapolAfter = "flat"
+        self.smileConventionInput = "strike"
+        self.deltaConvAdjInput = 1.0
+        self.leeFactor = 1.0
+        self.isPremiumInput = 0
+
+
+def getVolatilityFromSmile(smilePoint, commonInput, volInterpolationMethod, indexBefore):
+    volValues = commonInput.volValues
+    curveLength = len(volValues)
+    if curveLength == 1:
+        return volValues[0]
+
+    indexBefore = getVolIndexBefore(indexBefore, curveLength)
+    smileAxis = commonInput.smileAxis
+
+    if smileAxis[indexBefore] == smilePoint:
+        return volValues[indexBefore]
+
+    if smileAxis[indexBefore + 1] == smilePoint:
+        return volValues[indexBefore + 1]
+
+    if volInterpolationMethod == "cubicSpline":
+        secondDerivatives = commonInput.secondDerivatives
+        return cubicSplineInterpolation(smilePoint, smileAxis[indexBefore], smileAxis[indexBefore + 1], volValues[indexBefore], volValues[indexBefore + 1], secondDerivatives[indexBefore], secondDerivatives[indexBefore + 1])
+
+    if volInterpolationMethod == "lee":
+        return leeExtrapolation(smileAxis, indexBefore, smilePoint, volValues, commonInput)
+
+    return getInterpolatedValue(volInterpolationMethod, smilePoint, smileAxis[indexBefore], smileAxis[indexBefore+1], volValues[indexBefore], volValues[indexBefore+1])
+
+def getVolIndexBefore(pointFloorIndex, listLength):
+	if listLength <= 1:
+		return 0
+	if pointFloorIndex == listLength - 1:
+		return pointFloorIndex - 1
+	return getIndexBefore(pointFloorIndex, listLength)
+
+def getIndexBefore(pointFloorIndex, listLength):
+	if pointFloorIndex == -1:
+		return 0
+	if pointFloorIndex == -2:
+		return math.max(0, listLength - 2)
+	return pointFloorIndex
+
+
+def getInterpolatedValue(interpolationMethod, point, pointBefore, pointAfter, valueBefore, valueAfter):
+    if interpolationMethod == "linear":
+        return linearInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter)
+    if interpolationMethod == "flat":
+            return flatInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter)
+    if interpolationMethod == "flatRight":
+        return flatRightInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter)
+    if interpolationMethod == "flatLeft":
+            return flatLeftInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter)
+
+def linearInterpolation(x, x1, x2, y1, y2):
+    if x1 == x2:
+        return y1
+    return ((x - x1) * y2 + (x2 - x) * y1) / (x2 - x1)
+
+def flatInterpolation(x, x1, x2, y1, y2):
+    if x <= x1:
+        return y1
+    if x < x2:
+        return (y1 + y2) / 2
+    return y2
+
+def flatRightInterpolation(x, x1, x2, y1, y2):
+    if x <= x1:
+        return y1
+    return y2
+
+def flatLeftInterpolation(x, x1, x2, y1, y2):
+    if x < x2:
+        return y1
+    return y2
+
+
+def leeExtrapolation(smileAxis, indexBefore, smilePoint, volValues, commonInput):
+    startIndex = indexBefore
+    endIndex = indexBefore + 1
+    if startIndex == 0:
+        endIndex = 0
+        startIndex = 1
+
+    forwardStrike = commonInput.forwardStrike
+    smileConventionInput = commonInput.smileConventionInput
+    deltaConvAdjInput = commonInput.deltaConvAdjInput
+    isPremiumInput = commonInput.isPremiumInput
+    sqrtVolYearFraction = commonInput.sqrtVolYearFraction
+
+    pillarEnd = convertPillarLeeExtrapolation(smileAxis[endIndex], deltaConvAdjInput, smileConventionInput, forwardStrike, isPremiumInput, sqrtVolYearFraction)
+    pillarStart = convertPillarLeeExtrapolation(smileAxis[startIndex], deltaConvAdjInput, smileConventionInput, forwardStrike, isPremiumInput, sqrtVolYearFraction)
+    pillar = convertPillarLeeExtrapolation(smilePoint, deltaConvAdjInput, smileConventionInput, forwardStrike, isPremiumInput, sqrtVolYearFraction)
+    volEnd = volValues[endIndex]
+
+    slope = (volValues[startIndex] - volEnd) / (pillarStart - pillarEnd)
+    return slope * commonInput.leeFactor * (pillar - pillarEnd) + volEnd
+
+def convertPillarLeeExtrapolation(pillar, deltaAdj, smileConvention, forwardStrike, isPremium, sqrtVolYearFraction):
+    if smileConvention == "strike":
+        return math.sqrt(abs(math.log(pillar/forwardStrike )))
+    if smileConvention == "logMoneyness":
+        return math.sqrt(abs(pillar))
+    if smileConvention == "deltaCall" or smileConvention == "deltaPut":
+        smileVal = -1 if smileConvention == "deltaPut" else 1
+        return getLeeVolatilityForDelta(pillar, sqrtVolYearFraction, deltaAdj,smileVal , isPremium)
+
+
+def getLeeVolatilityForDelta(delta, bsStdDev, deltaConventionFactor, callPutIndicator, premiumAdjustmentIndicator):
+	if premiumAdjustmentIndicator == 1:
+		return math.sqrt(abs(computeLeeLogMoneynessFromAdjustedDelta(delta, bsStdDev, deltaConventionFactor, callPutIndicator)))
+
+	deltaAdjusted = delta / deltaConventionFactor
+	return abs(norm.ppf(abs(deltaAdjusted))) * getArbitrageFactor(deltaAdjusted, callPutIndicator)
+
+def computeLeeLogMoneynessFromAdjustedDelta(delta, bsStdDev, deltaConventionFactor, callPutIndicator):
+	option = OptionDesc(callPutIndicator, bsStdDev, delta)
+	delta = callPutIndicator * abs(delta) / deltaConventionFactor
+	return newtonSolver1D(delta, 0, 1e-8, 10, getPremiumAdjustedDeltaKernelLee, option, "unused", "unused")
+
+def getPremiumAdjustedDeltaKernelLee(x, optionDefinition, optional1, optional2):
+	bsDMinus = 0
+	if x!=0:
+		bsDMinus = (-x - abs(x)*0.5)/math.sqrt(abs(x))
+	return optionDefinition.callPutIndicator * math.exp(x) * norm.cdf(optionDefinition.callPutIndicator * bsDMinus)
+
+def getArbitrageFactor(pillar, callPutIndicator):
+	if pillar <= callPutIndicator * 0.5:
+		return 2
+	return 2 / 3
+
+def cubicSplineInterpolation(x, x1, x2, y1, y2, y1Second, y2Second):
+    if x1 == x2:
+        return y1
+    xDiff = x2 - x1
+    a = (x2 - x)/ xDiff
+    b = 1 - a
+    xSquare = xDiff * xDiff / 6
+    return a * y1 + b * y2 + xSquare * ((pow(a, 3) - a) *  y1Second + (pow(b, 3) - b) * y2Second)
+
+
+def computeStrategiesSolverJacobianFunction(problemDimension, currentPoint, commonInputs, instrumentsToFit, fx, jacobian,nbStrikesByExpiry):
+    for j in range(problemDimension):
+        currentValue = instrumentsToFit[j + nbStrikesByExpiry][6]
+        dx = 0.00001
+        if currentValue != 0.0:
+            dx *= abs(currentValue)
+        updateSolvingPointOneCoordinate(currentPoint, nbStrikesByExpiry + j, dx, commonInputs, instrumentsToFit,nbStrikesByExpiry)
+        computeInterpSpaceParam(commonInputs, currentPoint)
+        computeInterpolationHelperParams(currentPoint, commonInputs.interpMethod)
+        for i in range(problemDimension):
+            instrumentLineToFit = instrumentsToFit[int(nbStrikesByExpiry + i)][:]
+            diffPrice = priceOneCalibrationInstrument(currentPoint, commonInputs, instrumentLineToFit) - instrumentLineToFit[5]
+            jacobian[i][j] = (diffPrice - fx[i]) / dx
+
+        updateSolvingPointOneCoordinate(currentPoint, nbStrikesByExpiry + j, -dx, commonInputs, instrumentsToFit)
+
+def luDecompostionByCroutAlgorithm(systemDimension, inAoutLu, TINY):
+
+    #scalingArray stores the implicit scaling of each row.
+    #Loop over rows to get the implicit scaling information.
+    for i in range(systemDimension):
+        big = 0
+        for j in range(systemDimension):
+            temp = abs(inAoutLu[i][j])
+            if temp > big:
+                big = temp
+
+        if big == 0.0:
+            print("Singular matrix in LUDecompostionByCroutAlgorithm")
+            return 0.0
+        #No nonzero largest element.
+        inAoutLu[systemDimension+1][i]=1.0/big #Save the scaling.
+
+    # This is the outermost kij loop.
+    imax = 0
+    for k in range(systemDimension):
+        big = 0 # Initialize for the search for largest pivot element.
+        for i in range(systemDimension):
+            temp=  inAoutLu[systemDimension+1][i]*abs(inAoutLu[i][k])
+            if (temp > big):# Is the figure of merit for the pivot better than
+                big = temp #the best
+                imax=i
+
+
+        if k != imax:
+            for j in range(systemDimension):
+                temp=inAoutLu[imax][j]
+                inAoutLu[imax][j]=inAoutLu[k][j]
+                inAoutLu[k][j]=temp
+
+            inAoutLu[systemDimension+1][imax]= inAoutLu[systemDimension+1][k] #Also interchange the scale factor.
+
+        inAoutLu[systemDimension][k]=imax
+        if (inAoutLu[k][k] == 0.0):
+            inAoutLu[k][k]=TINY
+
+        #If the pivot element is zero, the matrix is singular (at least to the precision of the
+        #algorithm). For some applications on singular matrices, it is desirable to substitute
+        # TINY for zero.
+        for i in range(k+1,systemDimension):
+            temp=inAoutLu[i][k] / inAoutLu[k][k] #Divide by the pivot element.
+            for j in range(k+1,systemDimension): #Innermost loop: reduce remaining submatrix.
+                inAoutLu[i][j] -= temp*inAoutLu[k][j]
+
+def getL1Norm(x):
+    maxVal = 0
+    for i in range(len(x)):
+        maxVal = max(maxVal, abs(x[i]))
+    return maxVal
+
+def solveLinearSystemFromCroutLUDecomposition(systemDimension, lu, secondMemberAndResult):
+    ii = 0
+    for i in range(systemDimension):
+        #When ii is set to a positive value, it will become the
+        #index of the first nonvanishing element of b. We now do the forward substitution. The
+        #only new wrinkle is to unscramble the permutationas we go.
+        ip = lu[systemDimension][i]
+        sum = secondMemberAndResult[ip]
+        secondMemberAndResult[ip] = secondMemberAndResult[i]
+        if ii != 0:
+            for j in range(ii-1, i):
+                sum -= lu[i][j] * secondMemberAndResult[j]
+        if sum != 0.0: #A nonzero element was encountered, so from now on we
+            ii = i+1 #will have to do the sums in the loop above.
+
+        secondMemberAndResult[i]=sum
+
+    for i in range(systemDimension-1,-1,-1):#Now we do the backsubstitution,
+        sum=secondMemberAndResult[i]
+        for j in range(i+1, systemDimension):
+            sum -= lu[i][j] * secondMemberAndResult[j]
+        secondMemberAndResult[i] =sum / lu[i][i] #Store a component of the solution vector X.
+
+def updateSolvingPointOneCoordinate(currentPoint, parameterIndex, incrementValue, commonInputs, instrumentsToFit,nbStrikesByExpiry):
+    instrumentsToFit[parameterIndex][6] += incrementValue
+    for i in range(nbStrikesByExpiry):
+        constraintLine = instrumentsToFit[i][:]
+        fittingParamIndex = constraintLine[6]
+        if fittingParamIndex == parameterIndex:
+            updateOneSmileAxisElement(currentPoint, commonInputs, constraintLine, instrumentsToFit)
+
+def updateOneSmileAxisElement(calibrationPoint, commonInputs, constraintLine, instrumentsToFit):
+    callPutIndicator = constraintLine[1] #used also to determine if it is a fitting instrument
+    if callPutIndicator != 0: #to be repriced
+        vol = constraintLine[5] #atmPlusHalfSignedRiskReversal
+        indexLineOfFittingParam = constraintLine[6]
+        vol += instrumentsToFit[indexLineOfFittingParam][6]  #add bf
+        strikeColumnIndexInTheSmile = constraintLine[3]
+        deltaConstraint = constraintLine[4]
+        calibrationPoint[1][ strikeColumnIndexInTheSmile] = computeStrikeFromDelta(callPutIndicator * abs(deltaConstraint), vol * commonInputs.sqrtYfExpiryAsOf,
+                commonInputs.forwardStrike, commonInputs.deltaConventionAdjustment, callPutIndicator, commonInputs.premiumAdjustmentIndicator)
+
+        calibrationPoint[2][strikeColumnIndexInTheSmile] = vol
+
+
+def newtonSolver1D(target, initialPoint, tolerance, maxNbIteration, function, argument1, argument2, argument3):
+    f0 = function(initialPoint, argument1, argument2, argument3)
+    epsilon = 0.00001
+    for k in range(maxNbIteration+1):
+        f1 = function(initialPoint + epsilon, argument1, argument2, argument3)
+        df =(f1 - f0) / epsilon
+        if (df == 0.0):
+            return -1
+        xkPlus1 = initialPoint + (target - f0) / df
+        fkPlus1 = function(xkPlus1, argument1, argument2, argument3)
+        if (abs(xkPlus1 - initialPoint) < tolerance):
+            return xkPlus1
+        initialPoint = xkPlus1
+        f0 = fkPlus1
+
+    return -1
+
+
+def findRoot(function, lowerBound, upperBound, context):
+    tolerance = pow(10,-7)
+    floatEpsilon = pow(10,-7)
+    maxIterations =100
+    d    = 0
+    e    = 0
+    min1 = 0
+    min2 = 0
+    fc   = 0
+    p    = 0
+    q    = 0
+    r    = 0
+    s    = 0
+    tol1 = 0
+    xm   = 0
+    a  = lowerBound
+    b  = upperBound
+    c  = upperBound
+    fa = float(function(a, context))
+    fb = float(function(b, context))
+
+    #check that bounds definitely include solution
+    if ((fa > 0 and fb > 0) or (fa < 0) and (fb < 0)):
+        return -1
+
+    # Attempt to find the solution
+    fc = fb
+    for i in range( maxIterations):
+        if ((fb > 0 and fc > 0) or (fb < 0 and fc < 0)):
+            c = a
+            fc = fa
+            d  = (b - a)
+            e = d
+
+        if (abs(fc) < abs(fb)):
+            a  = b
+            b  = c
+            c  = a
+            fa = fb
+            fb = fc
+            fc = fa
+
+
+        # Convergence check
+        tol1 = 2 * floatEpsilon * abs(b) + (0.5 * tolerance)
+        xm = 0.5 * (c - b)
+        if abs(xm) <= tol1 or fb == 0.0:
+            return b
+
+    # Attempt inverse quadratic interpolation
+        if ((abs(e) >= tol1) and (abs(fa) > abs(fb))):
+            s = fb / fa
+            if (a == c):
+                p = 2 * xm * s
+                q = 1 - s
+            else:
+                q = fa / fc
+                r = fb / fc
+                p = s * ((2 * xm * q * (q - r)) - ((b - a) * (r - 1)))
+                q = (q - 1) * (r - 1) * (s - 1)
+
+
+        # Check bounds
+        if (p > 0):
+            q = -q
+
+        p = abs(p)
+        min1 = (3 * xm * q) - abs(tol1 * q)
+        min2 = abs(e * q)
+        if (2 * p < min(min1, min2)):# Accept interpolation
+            e = d
+            d = p / q
+        else:#Interpolation failed, use bisection
+            d = xm
+            e = d
+
+
+    else:# Bounds decreasing too slowly, use bisection
+        d = xm
+        e = d
+
+
+    # Move last best guess to a
+    a = b
+    fa = fb
+    if (abs(d) > tol1):
+        b = b + d
+    else:
+        if (xm >= 0):
+            b = b + abs(tol1)
+        else:
+            b = b - abs(tol1)
+
+        fb = function(b, context)
+
+    return -1
