@@ -17,27 +17,11 @@ class OptionDesc:
 	    self.stdDeviation = 1.0
 	    self.delta = 1.0
 
-
-def getBlackSpotPrice(forwardValue, strikeValue, bsStdDev, df, flavor):
-	return df * getBlackForwardPrice(forwardValue, strikeValue, bsStdDev, flavor)
-
-def getBlackForwardPrice(forwardValue, strikeValue, bsStdDev, flavor):
-	if isZero(bsStdDev):
-		return getVanillaIntrinsicValue(forwardValue, strikeValue, flavor)
-
-	d1 = getBSCallPutPricePlusDCoefficient(forwardValue, strikeValue, bsStdDev)
-	return  computeBlackFormula(flavor, forwardValue, strikeValue, normalCDF(flavor * d1), bsStdDev, d1, 0, normalCDF(flavor * (d1 - bsStdDev)))
-
-def getVanillaIntrinsicValue(forwardRate, strike, flavor):
-	return max(flavor * (forwardRate - strike), 0)
-
 def getBSCallPutPricePlusDCoefficient(forward, strike, bsStdDev):
 	if strike == 0: # when strike is near zero, N(d1) is equal to 1
 		return getPlusInfinityValue()
 	return (math.log(forward/ strike) + 0.5 * bsStdDev * bsStdDev) / bsStdDev
 
-def computeBlackFormula(flavor, forwardRate, strike, cumulNormald1, volFactor, d1, stdNormald1, cumulNormald2):
-	return flavor * (-strike * cumulNormald2 + forwardRate * cumulNormald1) # keep this formula order for instability result issue
 
 def computeInterpSpaceParam(fxVolInfo, expirySmileCurve):
     for strikeColumn = 0 ; strikeColumn <width(expirySmileCurve); ++strikeColumn:
@@ -444,3 +428,13 @@ def getL1Norm(x):
 
 
 
+#not used
+
+def computeDelta(forwardStrike, premiumAdjustmentIndicator, deltaConventionAdjustment, realizedStdDev, strikeQuotationType, quotedStrike, callPutIndicator):
+    if strikeQuotationType == "logMoneyness":
+        quotedStrike = forwardStrike * math.exp(quotedStrike)
+    if strikeQuotationType == "strike" or strikeQuotationType == "logMoneyness":
+        quotedStrike = computeDeltaFromStrike(quotedStrike, realizedStdDev, forwardStrike,
+                deltaConventionAdjustment, callPutIndicator, premiumAdjustmentIndicator)
+
+    return callPutIndicator * abs(quotedStrike)

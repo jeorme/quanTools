@@ -227,10 +227,10 @@ def getBSVolFromBfRr(strategyRank, foreignCurrency, domesticCurrency, fxVolInfo,
     bf = getQuote(fxVol,fxVolInfo.volId,bfDef["quoteId"])
     delta = rrDef["delta"]
     volMS = fxVolInfo.atmVol + bf
-    priceMs = getFxOtmPointFromCallPutQuoteFromStrangle(fxVolInfo, strategy, strategyRank, delta,
-            volMS, rr, 1, 3, expirySmileCurve, calibrationInstruments)
-    priceMs += getFxOtmPointFromCallPutQuoteFromStrangle(fxVolInfo, strategy, -strategyRank, delta,
-            volMS,  -rr, -1, 4, expirySmileCurve, calibrationInstruments)
+    priceMs = getFxOtmPointFromCallPutQuoteFromStrangle(fxVolInfo, strategyRank, delta,
+            volMS, rr, 1, 3, expirySmileCurve, calibrationInstruments,nbStrikesByExpiry)
+    priceMs += getFxOtmPointFromCallPutQuoteFromStrangle(fxVolInfo, -strategyRank, delta,
+            volMS,  -rr, -1, 4, expirySmileCurve, calibrationInstruments,nbStrikesByExpiry)
     #if strategy.butterfly.strategyConvention.target == "price":
     #    constraintLine = calibrationInstruments[0][0] #current available line index
     #    calibIntsLine = calibrationInstruments[nbStrikesByExpiry][0]
@@ -243,45 +243,36 @@ def getBSVolFromBfRr(strategyRank, foreignCurrency, domesticCurrency, fxVolInfo,
     #    calibrationInstruments[calibIntsLine][6] = bf #fx butterfly quote
     #    calibrationInstruments[calibIntsLine][7] = expirySmileCurve[3][constraintLine-2] #delta of the strategy
 
-def getFxOtmPointFromCallPutQuoteFromStrangle(fxVolInfo, strategy, strategyRank, deltaValue, volMS, rr,callPutIndicator,
-                                               strikeColumn, expirySmileCurve, calibrationInstruments):
-    priceMs = 0
+def getFxOtmPointFromCallPutQuoteFromStrangle(fxVolInfo, strategyRank, deltaValue, volMS, rr,callPutIndicator,
+                                               strikeColumn, expirySmileCurve, calibrationInstruments,nbStrikesByExpiry):
+
     volatility = volMS + 0.5 * rr #rr  is signed depending on the fact the we buy or sell the call/put
-    getFxOtmPointFromCallPutQuote(fxVolInfo, volatility, strategyRank, deltaValue, expirySmileCurve , calibrationInstruments)
-    #if (strategy.butterfly.strategyConvention.target == "price"):
-    #    constraintLine = calibrationInstruments[0][0]
-    #    delta = expirySmileCurve[3][constraintLine -1]
-    #    realizedStdDev = volMS* fxVolInfo.sqrtYfExpiryAsOf
-    #    K_MS = computeStrikeFromDelta(callPutIndicator * abs(delta), realizedStdDev, fxVolInfo.forwardStrike, fxVolInfo.deltaConventionAdjustment, callPutIndicator, fxVolInfo.premiumAdjustmentIndicator)
+    getFxOtmPointFromCallPutQuote(fxVolInfo, volatility, strategyRank, deltaValue,callPutIndicator,expirySmileCurve , calibrationInstruments)
+    constraintLine = int(calibrationInstruments[0][0])
+    delta = expirySmileCurve[3][constraintLine -1]
+    realizedStdDev = volMS* fxVolInfo.sqrtYfExpiryAsOf
+    K_MS = computeStrikeFromDelta(callPutIndicator * abs(delta), realizedStdDev, fxVolInfo.forwardStrike, fxVolInfo.deltaConventionAdjustment, callPutIndicator, fxVolInfo.premiumAdjustmentIndicator)
+    calibrationInstruments[int(calibrationInstruments[nbStrikesByExpiry][0])][strikeColumn] = K_MS
+    calibrationInstruments[int(calibrationInstruments[0][0] - 1)][5] = fxVolInfo.atmVol + 0.5*rr
+    return getBlackSpotPrice(fxVolInfo.forwardStrike, K_MS, realizedStdDev, fxVolInfo.dfDom, callPutIndicator)
 
-	#	calibrationInstruments[calibrationInstruments[nbStrikesByExpiry][0]][strikeColumn] = K_MS
-    #    calibrationInstruments[calibrationInstruments[0][0] - 1][5] = fxVolInfo.atmVol + 0.5*rr
-    #    priceMs = getBlackSpotPrice(fxVolInfo.forwardStrike, K_MS, realizedStdDev, fxVolInfo.dfDom, callPutIndicator)
 
-    #return priceMs
 
-def getFxOtmPointFromCallPutQuote(fxVolInfo, volatility, recordIndexId, otmInstrument, outputFxSmile,
+def getFxOtmPointFromCallPutQuote(fxVolInfo, volatility, recordIndexId, delta,callPutIndicator, outputFxSmile,
                                   calibrationInstruments):
 
     realizedStdDev = volatility * fxVolInfo.sqrtYfExpiryAsOf
-    callPutIndicator = otmInstrument.instrumentType
-    currentLine = calibrationInstruments[0][0]
+    currentLine = int(calibrationInstruments[0][0])
     calibrationInstruments[0][0] = currentLine + 1
-    strikeQuotationType = otmInstrument.strikeQuotation.type
-    strikeQuotationValue = otmInstrument.strikeQuotation.quotedValue
-    outputFxSmile[3][currentLine] = computeDelta(fxVolInfo.forwardStrike, fxVolInfo.premiumAdjustmentIndicator,
-                                             fxVolInfo.deltaConventionAdjustment, realizedStdDev, strikeQuotationType,
-                                             strikeQuotationValue, callPutIndicator)
-    outputFxSmile[1][currentLine] = computeStrike(fxVolInfo.forwardStrike, fxVolInfo.premiumAdjustmentIndicator,
-                                              fxVolInfo.deltaConventionAdjustment, realizedStdDev, strikeQuotationType,
-                                              strikeQuotationValue, callPutIndicator)
+    outputFxSmile[3][currentLine] = delta * callPutIndicator
+    outputFxSmile[1][currentLine] = computeStrikeFromDelta(callPutIndicator * abs(delta), realizedStdDev, fxVolInfo.forwardStrike, fxVolInfo.deltaConventionAdjustment, callPutIndicator,  fxVolInfo.premiumAdjustmentIndicator)
     outputFxSmile[2][currentLine] = volatility
     outputFxSmile[4][currentLine] = recordIndexId
 
-    if (height(calibrationInstruments) > currentLine & & width(calibrationInstruments) > 4)
-        calibrationInstruments[currentLine][2] = recordIndexId // id
-        calibrationInstruments[currentLine][1] = sign(recordIndexId) // constraint
-        calibrationInstruments[currentLine][4] = outputFxSmile[3][currentLine] // delta constraint
+    if calibrationInstruments.shape[0] > currentLine and calibrationInstruments.shape[1] > 4:
+        calibrationInstruments[currentLine][2] = recordIndexId # id
+        calibrationInstruments[currentLine][1] = 1 if recordIndexId >0 else -1 # constraint
+        calibrationInstruments[currentLine][4] = outputFxSmile[3][currentLine] # delta constraint
 
 
 def computeStrikeFromDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator, premiumAdjustmentIndicator):
@@ -289,35 +280,33 @@ def computeStrikeFromDelta(delta, bsStdDev, forward, deltaConventionFactor, call
 		return computeStrikeFromAdjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator)
 	return computeStrikeFromUnadjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator)
 
-def computeDelta(forwardStrike, premiumAdjustmentIndicator, deltaConventionAdjustment, realizedStdDev, strikeQuotationType, quotedStrike, callPutIndicator):
-    if strikeQuotationType == "logMoneyness":
-        quotedStrike = forwardStrike * math.exp(quotedStrike)
-    if strikeQuotationType == "strike" or strikeQuotationType == "logMoneyness":
-        quotedStrike = computeDeltaFromStrike(quotedStrike, realizedStdDev, forwardStrike,
-                deltaConventionAdjustment, callPutIndicator, premiumAdjustmentIndicator)
-
-    return callPutIndicator * abs(quotedStrike)
-
-
-
-def computeStrike(forwardStrike, premiumAdjustmentIndicator, deltaConventionAdjustment, realizedStdDev, strikeQuotationType, quotedStrike, callPutIndicator):
-	if strikeQuotationType == "delta":
-		return computeStrikeFromDelta(callPutIndicator * abs(quotedStrike), realizedStdDev, forwardStrike, deltaConventionAdjustment, callPutIndicator, premiumAdjustmentIndicator)
-	if strikeQuotationType == "strike":
-		return quotedStrike
-	if strikeQuotationType == "logMoneyness":
-		return forwardStrike * math.exp(quotedStrike)
-
+def getBlackSpotPrice(forwardValue, strikeValue, bsStdDev, df, flavor):
+	return df * getBlackForwardPrice(forwardValue, strikeValue, bsStdDev, flavor)
 
 def computeStrikeFromAdjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator):
-	delta = callPutIndicator * abs(delta) / deltaConventionFactor
-	option = OptionDesc(callPutIndicator, bsStdDev, delta)
-	if callPutIndicator == -1:
-		return forward * newtonSolver1D(delta, 1, 1e-8, 10, getPremiumAdjustedDeltaKernel, option, "unused", "unused")
-	kMax = computeStrikeFromUnadjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator) / forward
-	kMin = findRoot(strikeFromMaximumAdjustedDelta, 0.1 * kMax, kMax, option)
-	return forward * findRoot(getPremiumAdjustedDeltaKernelBrent, kMin, 5 * kMax, option)
+	#delta = callPutIndicator * abs(delta) / deltaConventionFactor
+	#option = OptionDesc(callPutIndicator, bsStdDev, delta)
+	#if callPutIndicator == -1:
+#		return forward * newtonSolver1D(delta, 1, 1e-8, 10, getPremiumAdjustedDeltaKernel, option, "unused", "unused")
+#	kMax = computeStrikeFromUnadjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator) / forward
+#	kMin = findRoot(strikeFromMaximumAdjustedDelta, 0.1 * kMax, kMax, option)
+	#return forward * findRoot(getPremiumAdjustedDeltaKernelBrent, kMin, 5 * kMax, option)
+    return 100
 
 
-def computeStrikeFromUnadjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator)
-	return (forward * math.exp(-callPutIndicator * inverseNormalCDF(callPutIndicator * delta / deltaConventionFactor) * bsStdDev + 0.5 * bsStdDev*bsStdDev))
+def computeStrikeFromUnadjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator):
+	return (forward * math.exp(-callPutIndicator * norm.ppf(callPutIndicator * delta / deltaConventionFactor) * bsStdDev + 0.5 * bsStdDev*bsStdDev))
+
+
+def getBlackForwardPrice(forwardValue, strikeValue, bsStdDev, flavor):
+	if abs(bsStdDev)<pow(10,-14):
+		return getVanillaIntrinsicValue(forwardValue, strikeValue, flavor)
+
+	d1 = getBSCallPutPricePlusDCoefficient(forwardValue, strikeValue, bsStdDev)
+	return  computeBlackFormula(flavor, forwardValue, strikeValue, norm.cdf(flavor * d1), bsStdDev, d1, 0, norm.cdf(flavor * (d1 - bsStdDev)))
+
+def getVanillaIntrinsicValue(forwardRate, strike, flavor):
+	return math.max(flavor * (forwardRate - strike), 0)
+
+def computeBlackFormula(flavor, forwardRate, strike, cumulNormald1, volFactor, d1, stdNormald1, cumulNormald2):
+	return flavor * (-strike * cumulNormald2 + forwardRate * cumulNormald1) # keep this formula order for instability result issue
