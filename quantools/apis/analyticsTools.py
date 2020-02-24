@@ -3,7 +3,7 @@ import json
 from flask import request, jsonify
 from datetime import datetime
 from flask_restplus import Namespace,Resource, fields
-from quantools.analyticsTools.analyticsTools import yearFraction
+from quantools.analyticsTools.analyticsTools import yearFraction, getBasis
 api = Namespace('analytics', 'Tools')
 
 @api.route('/analytics/yearFraction')
@@ -30,7 +30,7 @@ class yearFractionTools(Resource):
         get service to have the enum used for the basis
         :return: lit of basis enum
         """
-        voc=["ACT/365.FIXED","ACT/365.25","ACT/360","ACT/364"]
+        voc=getBasis()
         return jsonify(voc)
 
 

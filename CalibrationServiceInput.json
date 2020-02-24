@@ -1,0 +1,118 @@
+{
+  "asOfDate": "2020-02-12",
+  "marketDataDefinitions": {
+    "fxVolatilities": [
+      {
+        "basis": "ACT/360",
+        "butterflyStrategy": "STRANGLE",
+        "calibrationType": "BID_ASK",
+        "currencyPairId": "EUR/USD",
+        "id": "EURUSD_Volatility",
+        "domesticCurrencyId": "EUR",
+        "domesticDiscountId": "EUR-SWAP",
+        "expiries": [
+          {
+            "atmConvention": "DELTA_NEUTRAL_STRADDLE",
+            "atmQuoteId": "ATM",
+            "butterflyQuoteIds": [
+              {
+                "delta": 0.1,
+                "quoteId": "but"
+              }
+            ],
+            "deliveryDate": "2020-02-14",
+            "deltaConvention": "FORWARD",
+            "expiryDate": "2020-02-14",
+            "riskReversalQuoteIds": [
+              {
+                "delta": 0.1,
+                "quoteId": "rr"
+              }
+            ]
+          }
+        ],
+        "expiryExtrapolationMethod": "FLAT",
+        "expiryInterpolationMethod": "FLAT",
+        "expiryInterpolationVariable": "TIME_WEIGHTED_TOTAL_VARIANCE",
+        "foreignCurrencyId": "USD",
+        "foreignDiscountId": "USD-SWAP",
+        "fxEvents": {},
+        "premiumAdjusted": true,
+        "smileExtrapolationMethod": "CUBIC_SPLINE",
+        "smileInterpolationMethod": "CUBIC_SPLINE",
+        "smileInterpolationVariable": "DELTA_CALL",
+        "strategyConvention": "BROKER_STRANGLE",
+        "surfaceType": "BF_RR"
+      }
+    ],
+    "yieldCurves": [
+      {
+        "compoundFrequency": "ANNUALLY",
+        "currencyId": "EUR",
+        "extrapolationAfterLastPoint": {
+          "method": "CUBIC_SPLINE",
+          "variable": "DISCOUNT_FACTOR"
+        },
+        "extrapolationBeforeFirstPoint": {
+          "method": "CUBIC_SPLINE",
+          "variable": "DISCOUNT_FACTOR"
+        },
+        "interpolation": {
+          "method": "CUBIC_SPLINE",
+          "variable": "DISCOUNT_FACTOR"
+        },
+        "interpolationSwitches": [
+          {
+            "maturity": "2020-02-10",
+            "method": "CUBIC_SPLINE",
+            "variable": "DISCOUNT_FACTOR"
+          }
+        ],
+        "maturities": [
+          "2020-02-14",
+          "2020-02-16"
+        ],
+        "id": "EUR-SWAP",
+        "zeroCouponBasis": "BASIS_30E_1_360_ITL",
+        "zeroCouponFormula": "COMPOUND"
+      }
+    ]
+  },
+  "marketData": {
+    "yieldCurveValues": [
+      {
+        "discountFactors": [
+          0.9,
+          0.8
+        ],
+        "id": "EUR-SWAP"
+      }
+    ],
+    "fxRates": [
+      {
+        "currencyPairId": "EUR/USD",
+        "quoteValue": 1.14,
+        "spotDate": "2020-02-14"
+      }
+    ],
+    "fxVolatilityQuotes": [
+      {
+        "id": "EURUSD_Volatility",
+        "quotes": [
+          {
+            "quoteId": "rr",
+            "value": 0.5
+          },
+          {
+            "quoteId": "but",
+            "value": 0.5
+          },
+          {
+            "quoteId": "ATM",
+            "value": 0.2
+          }
+        ]
+      }
+    ]
+  }
+}

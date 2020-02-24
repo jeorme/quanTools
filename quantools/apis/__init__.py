@@ -1,6 +1,5 @@
 from flask_restplus import Api
 
-from .rnn import api as rnn
 from .timeseries import api as timeseries
 from .pricing import api as pricing
 from .interpolation import api as interpolation
@@ -15,7 +14,6 @@ api = Api(
 )
 
 api.add_namespace(timeseries)
-api.add_namespace(rnn)
 api.add_namespace(pricing)
 api.add_namespace(interpolation)
 api.add_namespace(calibration)
