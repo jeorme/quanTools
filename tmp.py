@@ -102,15 +102,15 @@ def getAtmStrikeDeltaNeutralStraddle(forwardStrike, premiumAdjustmentIndicator, 
     return forwardStrike * math.exp((-2 * premiumAdjustmentIndicator + 1) * 0.5 * realizedStdDev * realizedStdDev)
 
 def computeDeltaFromStrike(strike, bsStdDev, forward, deltaConventionFactor, callPutIndicator, premiumAdjustmentIndicator):
-	return callPutIndicator * deltaConventionFactor * getPremiumAdjustedRatioFromIndicator(forward, premiumAdjustmentIndicator, strike) * norm.cdf(callPutIndicator * (getBSCallPutPricePlusDCoefficient(forward, strike, bsStdDev) - premiumAdjustmentIndicator * bsStdDev))
+    return callPutIndicator * deltaConventionFactor * getPremiumAdjustedRatioFromIndicator(forward, premiumAdjustmentIndicator, strike) * norm.cdf(callPutIndicator * (getBSCallPutPricePlusDCoefficient(forward, strike, bsStdDev) - premiumAdjustmentIndicator * bsStdDev))
 
 def getBSCallPutPricePlusDCoefficient(forward, strike, bsStdDev):
-	if strike == 0: # when strike is near zero, N(d1) is equal to 1
-		return getPlusInfinityValue()
-	return (math.log(forward/ strike) + 0.5 * bsStdDev * bsStdDev) / bsStdDev
+    if strike == 0: # when strike is near zero, N(d1) is equal to 1
+        return getPlusInfinityValue()
+    return (math.log(forward/ strike) + 0.5 * bsStdDev * bsStdDev) / bsStdDev
 
 def getPlusInfinityValue():
-	return 1e306
+    return 1e306
 
 
 def getInstrumentTypeEnum(instrumentType):
@@ -126,7 +126,7 @@ def getInstrumentTypeEnum(instrumentType):
 
 
 
-def getBSVolFromBfRr(strategyRank, foreignCurrency, domesticCurrency, fxVolInfo, strategy, expirySmileCurve, calibrationInstruments):
+def getBSVolFromBfRr(strategyRank, foreignCurrency, domesticCurrency, fxVolInfo, strategy, expirySmileCurve, calibrationInstruments,nbStrikesByExpiry):
     rr = data0D("FX_VOL", [strategy.riskReversal.instrumentName, foreignCurrency, domesticCurrency], calculationDate())
     rr *= strategy.riskReversal.instruments[0].direction
     bf = data0D("FX_VOL", [strategy.butterfly.instrumentName, foreignCurrency, domesticCurrency], calculationDate())
@@ -196,7 +196,7 @@ def getExpirySmile(foreignCurrency, domesticCurrency, nbStrikesByExpiry, data, f
 
     # strategyRank = 0
     for otmComponent  in smileStrategies.otm:
-         getBSVolFromBfRr(recordIndexId, foreignCurrency, domesticCurrency, fxVolInfo, otmRecord, outputFxSmile, calibrationInstruments)
+         getBSVolFromBfRr(recordIndexId, foreignCurrency, domesticCurrency, fxVolInfo, otmRecord, outputFxSmile, calibrationInstruments,nbStrikesByExpiry)
 
     computeInterpSpaceParam(fxVolInfo, expirySmileCurve)
     nbStrikeInTheSmile = calibrationInstruments[0][0]
