@@ -6,36 +6,38 @@ from quantools.analyticsTools.analyticsTools import yearFraction
 
 def constructFXVolSurface(data):
     asOfDate = datetime.strptime(data["asOfDate"],"%Y-%m-%d")
-    expiryInput = data["marketDataDefinitions"]["fxVolatilities"][0]["expiries"]
-    expiryInputValue = data["marketData"]["fxVolatilityQuotes"][0]["quotes"]
-    nbStrikesByExpiry = 2 * len(expiryInput[0]["butterflyQuoteIds"]) + 1
-    surface = np.zeros((len(expiryInput) * 7, nbStrikesByExpiry + 1))
-    nblines = 7 if data["marketDataDefinitions"]["fxVolatilities"][0]["smileInterpolationMethod"] == "CUBIC_SPLINE" else 6
-    expirySmileCurve = np.zeros((nblines, nbStrikesByExpiry))
-    domCur = data["marketDataDefinitions"]["fxVolatilities"][0]["domesticCurrencyId"]
-    forCur = data["marketDataDefinitions"]["fxVolatilities"][0]["foreignCurrencyId"]
-    spotDate = data["marketData"]["fxRates"][0]["spotDate"]
-    volatilityBasis = data["marketDataDefinitions"]["fxVolatilities"][0]["basis"]
-    underlyingSpotValue =  data["marketData"]["fxRates"][0]["quoteValue"]
-    forDisc =data["marketDataDefinitions"]["fxVolatilities"][0]["domesticDiscountId"]
-    domDisc = data["marketDataDefinitions"]["fxVolatilities"][0]["foreignDiscountId"]
-    smileCounter = 0
-    premiumAdjustmentIndicator = data["marketDataDefinitions"]["fxVolatilities"][0]["premiumAdjusted"] * 1.0
-    isSmileBroker =data["marketDataDefinitions"]["fxVolatilities"][0]["strategyConvention"] == "BROKER_STRANGLE"
-    for smileLine in expiryInput:
-        nbDaysDeliveryDate = smileLine["deliveryDate"]
-        dfFor = 0.95 #discountFactorFromDays(forDisc, spotDate, nbDaysDeliveryDate)
-        dfDom = 0.96 #discountFactorFromDays(domDisc, spotDate, nbDaysDeliveryDate)
-        sqrtVolYearFraction = math.sqrt(yearFraction(asOfDate, datetime.strptime(smileLine["expiryDate"],"%Y-%m-%d"), volatilityBasis))
-        forwardStrike = underlyingSpotValue * dfFor / dfDom
-        fxVolInfo = FxExpiryfxVolInfo(forwardStrike, premiumAdjustmentIndicator,
-                       getDeltaConventionAdjustment(smileLine["deltaConvention"], dfFor), sqrtVolYearFraction,
-                       dfDom, data["marketDataDefinitions"]["fxVolatilities"][0]["smileInterpolationMethod"],
-                       data["marketDataDefinitions"]["fxVolatilities"][0]["smileInterpolationVariable"], 0.10)
-        getExpirySmile(forCur, domCur, nbStrikesByExpiry, data, fxVolInfo, pow(10,-6),
-                    underlyingSpotValue, expirySmileCurve,isSmileBroker)
-        fxCalibrationResultsDisplay(smileCounter, fxVolInfo, expirySmileCurve, surface)
-        ++smileCounter
+
+    for fxvol in data["marketDataDefinitions"]["fxVolatilities"]:
+        expiryInput =fxvol["expiries"]
+        expiryInputValue = data["marketData"]["fxVolatilityQuotes"][0]["quotes"]
+        nbStrikesByExpiry = 2 * len(expiryInput[0]["butterflyQuoteIds"]) + 1
+        surface = np.zeros((len(expiryInput) * 7, nbStrikesByExpiry + 1))
+        nblines = 7 if fxvol["smileInterpolationMethod"] == "CUBIC_SPLINE" else 6
+        expirySmileCurve = np.zeros((nblines, nbStrikesByExpiry))
+        domCur =fxvol["domesticCurrencyId"]
+        forCur =fxvol["foreignCurrencyId"]
+        spotDate = data["marketData"]["fxRates"][0]["spotDate"]
+        volatilityBasis =fxvol["basis"]
+        underlyingSpotValue = data["marketData"]["fxRates"][0]["quoteValue"]
+        forDisc =fxvol["domesticDiscountId"]
+        domDisc =fxvol["foreignDiscountId"]
+        smileCounter = 0
+        premiumAdjustmentIndicator =fxvol["premiumAdjusted"] * 1.0
+        isSmileBroker =fxvol["strategyConvention"] == "BROKER_STRANGLE"
+
+        for smileLine in expiryInput:
+            nbDaysDeliveryDate = datetime.strptime(smileLine["deliveryDate"])
+            dfFor = 0.95 #discountFactorFromDays(forDisc, spotDate, nbDaysDeliveryDate)
+            dfDom = 0.96 #discountFactorFromDays(domDisc, spotDate, nbDaysDeliveryDate)
+            sqrtVolYearFraction = math.sqrt(yearFraction(asOfDate, datetime.strptime(smileLine["expiryDate"],"%Y-%m-%d"), volatilityBasis))
+            forwardStrike = underlyingSpotValue * dfFor / dfDom
+            fxVolInfo = FxExpiryfxVolInfo(forwardStrike, premiumAdjustmentIndicator,
+                           getDeltaConventionAdjustment(smileLine["deltaConvention"], dfFor), sqrtVolYearFraction,
+                           dfDom,fxvol["smileInterpolationMethod"],
+                          fxvol["smileInterpolationVariable"], 0.10)
+            getExpirySmile(forCur, domCur, nbStrikesByExpiry, data, fxVolInfo, pow(10,-6), underlyingSpotValue, expirySmileCurve,isSmileBroker,nbStrikesByExpiry)
+            fxCalibrationResultsDisplay(smileCounter, fxVolInfo, expirySmileCurve, surface)
+            ++smileCounter
 
     return surface
 
@@ -104,7 +106,7 @@ def getPremiumAdjustedRatioFromIndicator(forward, premiumAdjustmentIndicator, st
 
 def getJacobianSize(nbStrikesByExpiry, isSmileBroker):
     if isSmileBroker:
-        return (nbStrikesByExpiry - 1) / 2
+        return int((nbStrikesByExpiry - 1) / 2)
     return 0
 
 def getFxAtmPoint(fxVolInfo, atmConvention, recordIndexId, outputFxSmile, fxSpot, calibrationInstruments):
@@ -161,19 +163,16 @@ def getInstrumentTypeEnum(instrumentType):
 
 #### OK
 
-def getExpirySmile(foreignCurrency, domesticCurrency, nbStrikesByExpiry, smileStrategies, fxVolInfo, fxVolTolerance,fxSpot, expirySmileCurve):
-    isOtmDefined = isDefined(smileStrategies.otm)
-    isAtmDefined = isDefined(smileStrategies.atm)
-    isSmileB = isSmileBroker(smileStrategies, isOtmDefined)
-    jacobianSize = getJacobianSize(nbStrikesByExpiry, isSmileB)
-    calibrationInstruments = matrix(3 * jacobianSize + 1, 7 * boolToInt(jacobianSize > 0) + 1, 0) # getJacobianSize() for the smile constaints coming from broker smile
+def getExpirySmile(foreignCurrency, domesticCurrency, nbStrikesByExpiry, smileStrategies, fxVolInfo, fxVolTolerance,fxSpot, expirySmileCurve, isSmileB, nbStrikesByExpiry):
 
-    if height(calibrationInstruments) > nbStrikesByExpiry:
+    jacobianSize = getJacobianSize(nbStrikesByExpiry, isSmileB)
+    calibrationInstruments = np.zeros((3 * jacobianSize + 1, 7 * (jacobianSize > 0) + 1)) # getJacobianSize() for the smile constaints coming from broker smile
+
+    if calibrationInstruments.shape[0] > nbStrikesByExpiry:
         calibrationInstruments[nbStrikesByExpiry][0] = nbStrikesByExpiry
 
-    if isAtmDefined:
-        fxVolInfo.atmVol = data0D("FX_VOL", [smileStrategies.atm.instrumentName, foreignCurrency, domesticCurrency], calculationDate())
-        getFxAtmPoint(fxVolInfo, smileStrategies.atm.atmConvention, smileStrategies.atm.instruments[0], 100, expirySmileCurve, fxSpot, calibrationInstruments)
+    fxVolInfo.atmVol = data0D("FX_VOL", [smileStrategies.atm.instrumentName, foreignCurrency, domesticCurrency], calculationDate())
+    getFxAtmPoint(fxVolInfo, smileStrategies.atm.atmConvention, smileStrategies.atm.instruments[0], 100, expirySmileCurve, fxSpot, calibrationInstruments)
 
     if isOtmDefined:
         strategyRank = 0
