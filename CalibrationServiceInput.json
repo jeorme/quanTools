@@ -1,11 +1,11 @@
 {
-  "asOfDate": "2020-02-12",
+  "asOfDate": "2016-07-05",
   "marketDataDefinitions": {
     "fxVolatilities": [
       {
         "basis": "ACT/360",
         "butterflyStrategy": "STRANGLE",
-        "calibrationType": "BID_ASK",
+        "calibrationType": "MID",
         "currencyPairId": "EUR/USD",
         "id": "EURUSD_Volatility",
         "domesticCurrencyId": "EUR",
@@ -13,20 +13,28 @@
         "expiries": [
           {
             "atmConvention": "DELTA_NEUTRAL_STRADDLE",
-            "atmQuoteId": "ATM",
+            "atmQuoteId": "ATM1W",
             "butterflyQuoteIds": [
               {
                 "delta": 0.1,
-                "quoteId": "but"
+                "quoteId": "but1W10"
+              },
+               {
+                "delta": 0.25,
+                "quoteId": "but1W25"
               }
             ],
-            "deliveryDate": "2020-02-14",
+            "deliveryDate": "2016-07-12",
             "deltaConvention": "FORWARD",
-            "expiryDate": "2020-02-14",
+            "expiryDate": "2016-07-14",
             "riskReversalQuoteIds": [
               {
                 "delta": 0.1,
-                "quoteId": "rr"
+                "quoteId": "rr1W10"
+              },
+              {
+                "delta": 0.25,
+                "quoteId": "rr1W25"
               }
             ]
           }
@@ -100,16 +108,23 @@
         "id": "EURUSD_Volatility",
         "quotes": [
           {
-            "quoteId": "rr",
-            "value": 0.5
+            "quoteId": "rr1W10",
+            "value": -0.008
+          }, {
+            "quoteId": "rr1W25",
+            "value": -0.005
           },
           {
-            "quoteId": "but",
-            "value": 0.5
+            "quoteId": "but1W10",
+            "value": 0.00771
           },
           {
-            "quoteId": "ATM",
-            "value": 0.2
+            "quoteId": "but1W25",
+            "value": 0.00253
+          },
+          {
+            "quoteId": "ATM1W",
+            "value": 0.0905
           }
         ]
       }
