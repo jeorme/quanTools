@@ -150,8 +150,8 @@ def constructFXVolSurface(data):
         isSmileBroker = fxVol["strategyConvention"] == "BROKER_STRANGLE"
         for smileLine in fxVol["expiries"]:
             nbDaysDeliveryDate = smileLine["deliveryDate"]
-            dfFor = 0.95 #discountFactorFromDays(forDisc, spotDate, nbDaysDeliveryDate)
-            dfDom = 0.96 #discountFactorFromDays(domDisc, spotDate, nbDaysDeliveryDate)
+            dfFor = 0.9997194250025371 #discountFactorFromDays(forDisc, spotDate, nbDaysDeliveryDate)
+            dfDom = 0.9942786180585829 #discountFactorFromDays(domDisc, spotDate, nbDaysDeliveryDate)
             sqrtVolYearFraction = math.sqrt(yearFraction(asOfDate, datetime.strptime(smileLine["expiryDate"],"%Y-%m-%d"), volatilityBasis))
             forwardStrike = underlyingSpotValue * dfFor / dfDom
             fxVolInfo = FxExpiryfxVolInfo(forwardStrike, premiumAdjustmentIndicator,
@@ -184,7 +184,9 @@ def getExpirySmile(foreignCurrency, domesticCurrency, nbStrikesByExpiry, smileLi
 
     strategyRank = 0
     for i in range(len(smileLine["butterflyQuoteIds"])):
-        getBSVolFromBfRr(++strategyRank, foreignCurrency, domesticCurrency, fxVolInfo,smileLine["butterflyQuoteIds"][i],smileLine["riskReversalQuoteIds"][i],marketData["fxVolatilityQuotes"],expirySmileCurve, calibrationInstruments,nbStrikesByExpiry)
+        strategyRank +=1
+        getBSVolFromBfRr(strategyRank, foreignCurrency, domesticCurrency, fxVolInfo,smileLine["butterflyQuoteIds"][i],smileLine["riskReversalQuoteIds"][i],marketData["fxVolatilityQuotes"],expirySmileCurve, calibrationInstruments,nbStrikesByExpiry)
+
 
 
     computeInterpSpaceParam(fxVolInfo, expirySmileCurve)
@@ -220,6 +222,8 @@ def getBSVolFromBfRr(strategyRank, foreignCurrency, domesticCurrency, fxVolInfo,
     bf = getQuote(fxVol,fxVolInfo.volId,bfDef["quoteId"])
     delta = rrDef["delta"]
     volMS = fxVolInfo.atmVol + bf
+
+    ###issue in computation
     priceMs = getFxOtmPointFromCallPutQuoteFromStrangle(fxVolInfo, strategyRank, delta,
             volMS, rr, 1, 3, expirySmileCurve, calibrationInstruments,nbStrikesByExpiry)
     priceMs += getFxOtmPointFromCallPutQuoteFromStrangle(fxVolInfo, -strategyRank, delta,
@@ -421,7 +425,7 @@ def fitSmileForFxVolMarketWithMultiDimNewtonSolver(calibrationInstruments, fxVol
             luDecompostionByCroutAlgorithm(effectiveProblemDimension, jacRepo, 1.0e-40)
         for i in range(effectiveProblemDimension):
             f0[i] = -f0[i]
-            solveLinearSystemFromCroutLUDecomposition(effectiveProblemDimension, jacRepo, f0)
+        solveLinearSystemFromCroutLUDecomposition(effectiveProblemDimension, jacRepo, f0)
         if getL1Norm(f0) <= fxVolTolerance:
             break
 
@@ -478,19 +482,16 @@ def pointFloorIndex(list, point):
 
 def binary_search(Array, Search_Term):
     n = len(Array)
-    L = 0
-    R = n - 1
-
-    while L <= R:
-        mid = math.floor((L + R) / 2)
-        if Array[mid] < Search_Term:
-            L = mid + 1
-        elif Array[mid] > Search_Term:
-            R = mid - 1
+    if n== 0:
+        return 0
+    low = 0
+    while(n-low>1):
+        index = int((n+low)/2)
+        if Search_Term < Array[index]:
+            n = index
         else:
-            return mid
-    return -1
-
+            low = index
+    return -1 if Array[low] > Search_Term else low
 
 class CommonFxSmileInputs:
     def __init__(self):
@@ -779,8 +780,8 @@ def newtonSolver1D(target, initialPoint, tolerance, maxNbIteration, function, ar
 
 
 def findRoot(function, lowerBound, upperBound, context):
-    tolerance = pow(10,-7)
-    floatEpsilon = pow(10,-7)
+    tolerance = pow(10,-6)
+    floatEpsilon = pow(10,-6)
     maxIterations =100
     d    = 0
     e    = 0
@@ -839,37 +840,34 @@ def findRoot(function, lowerBound, upperBound, context):
                 p = s * ((2 * xm * q * (q - r)) - ((b - a) * (r - 1)))
                 q = (q - 1) * (r - 1) * (s - 1)
 
+            # Check bounds
+            if (p > 0):
+                q = -q
 
-        # Check bounds
-        if (p > 0):
-            q = -q
+            p = abs(p)
+            min1 = (3 * xm * q) - abs(tol1 * q)
+            min2 = abs(e * q)
+            if (2 * p < min(min1, min2)):# Accept interpolation
+                e = d
+                d = p / q
+            else:#Interpolation failed, use bisection
+                d = xm
+                e = d
 
-        p = abs(p)
-        min1 = (3 * xm * q) - abs(tol1 * q)
-        min2 = abs(e * q)
-        if (2 * p < min(min1, min2)):# Accept interpolation
-            e = d
-            d = p / q
-        else:#Interpolation failed, use bisection
+        else:# Bounds decreasing too slowly, use bisection
             d = xm
             e = d
 
-
-    else:# Bounds decreasing too slowly, use bisection
-        d = xm
-        e = d
-
-
-    # Move last best guess to a
-    a = b
-    fa = fb
-    if (abs(d) > tol1):
-        b = b + d
-    else:
-        if (xm >= 0):
-            b = b + abs(tol1)
+        # Move last best guess to a
+        a = b
+        fa = fb
+        if (abs(d) > tol1):
+            b = b + d
         else:
-            b = b - abs(tol1)
+            if (xm >= 0):
+                b = b + abs(tol1)
+            else:
+                b = b - abs(tol1)
 
         fb = function(b, context)
 

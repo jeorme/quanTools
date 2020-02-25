@@ -1,1 +1,1 @@
-__all__ = ['FXOPricer', 'mathematicTools']
+__all__ = ['FXOPricer', 'mathematicTools',"Option"]

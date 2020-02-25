@@ -4,10 +4,10 @@ from flask import request, jsonify
 from flask_restplus import Namespace,Resource, fields
 api = Namespace('interpolation', 'FX vol')
 
-@api.route('/smile')
+@api.route('/interpolation/smile')
 class Interpolation(Resource):
     @api.response(200,"Success")
-    @api.expect(api.model("input of smile interpolation",{"TBD": fields.String
+    @api.expect(api.model("input",{"TBD": fields.String
         }))
     def post(self):
         """
@@ -20,10 +20,10 @@ class Interpolation(Resource):
         # define model
         return jsonify({"TBD":TBD})
 
-@api.route('/expiry')
+@api.route('/interpolation/expiry')
 class Expiry(Resource):
     @api.response(200,"Success")
-    @api.expect(api.model("input of expiry interpolation",{"TBD" : fields.Float}))
+    @api.expect(api.model("input",{"TBD" : fields.Float}))
     def post(self):
         """
         interpolation : expiry axis
