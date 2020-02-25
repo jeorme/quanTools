@@ -6,11 +6,13 @@ from flask_restplus import Namespace,Resource, fields
 from quantools.analyticsTools.analyticsTools import yearFraction, getBasis
 api = Namespace('analytics', 'Tools')
 
-@api.route('/analytics/yearFraction')
+ressource_fields = api.model("year fraction input",{"startDate": fields.Date,"endDate": fields.Date,"basis" : fields.String})
+
+@api.route('/yearFraction')
 class yearFractionTools(Resource):
+    @api.doc("compute the year fraction")
     @api.response(200,"Success")
-    @api.expect(api.model("input",{"startDate": fields.Date,"endDate": fields.Date,"basis" : fields.String
-        }))
+    @api.expect(ressource_fields)
     def post(self):
         """
         yearFraction service
@@ -24,6 +26,7 @@ class yearFractionTools(Resource):
         # define model
         return jsonify({"yearFraction":yf})
 
+    @api.doc("retreive the list of the enum used for the year fraction")
     @api.response(200, "Success")
     def get(self):
         """

@@ -16,12 +16,12 @@
             "atmQuoteId": "FX_ATM_CALL_VOL_2M",
             "butterflyQuoteIds": [
               {
-                "delta": 0.1,
-                "quoteId": "FX_BF10_VOL_1M"
-              },
-              {
                 "delta": 0.25,
                 "quoteId": "FX_BF25_VOL_1M"
+              },
+              {
+                "delta": 0.1,
+                "quoteId": "FX_BF10_VOL_1M"
               }
             ],
             "deliveryDate": "2011-04-13",
@@ -29,12 +29,12 @@
             "expiryDate": "2011-04-11",
             "riskReversalQuoteIds": [
               {
-                "delta": 0.1,
-                "quoteId": "FX_RR10_VOL_1M"
-              },
-              {
                 "delta": 0.25,
                 "quoteId": "FX_RR25_VOL_1M"
+              },
+              {
+                "delta": 0.10,
+                "quoteId": "FX_RR10_VOL_1M"
               }
             ]
           }
