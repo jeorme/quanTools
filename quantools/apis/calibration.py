@@ -1,10 +1,8 @@
 from flask import request, jsonify
 from flask_restplus import Namespace,Resource, fields
 
-from fxVolGood import constructFXVolSurface
-from quantools.model.calibmodel.calibrationModel import calibrationSchema, MarketDataSchema, \
-    MarketDataDefinitionsSchema, mdValues, mdDef
-from quantools.model.marketData import marketData
+from quantools.library.fxvolCalibration.fxVolGood import constructFXVolSurface
+from quantools.model.calibmodel.calibrationModel import mdValues, mdDef
 
 api = Namespace('calibration', 'FX vol')
 
