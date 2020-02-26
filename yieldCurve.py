@@ -1,187 +1,228 @@
-# import math
-#
-# from quantools.analyticsTools.analyticsTools import yearFraction
-# from quantools.library.fxvolCalibration.fxVolGood import getIndexBefore, pointFloorIndex, cubicSplineInterpolation, \
-# 	linearInterpolation, getInterpolatedValue
-#
-#
-# def discountFactorFromDays(curve, refDate,startDate, endDate):
-# 	return computeDiscountFactor(curve, refDate, endDate) / computeDiscountFactor(curve, refDate, startDate)
-#
-#
-# def computeDiscountFactor(curve, refDate, discountDate):
-# 	if (discountDate <= refDate):
-# 		return 1
-#
-# 	return interpolateDFOnCurve(curve, discountDate, refDate)
-#
-#
-# def interpolateDFOnCurve(curve, interpDate, refDate):
-#     maturities = getYieldCurveMaturities(curve, "discountFactor", refDate)
-#     switchDates = getYieldCurveParameter([curve, "discountFactor"], "switchDates")
-#     interpolationIndex = interpolationMetaIndexFromCurveSwitchDates(interpDate, switchDates, maturities)
-#     indexBefore = getIndexBefore(pointFloorIndex(maturities, interpDate), len(maturities))
-#     matBefore = maturities[indexBefore]
-#     if (matBefore == interpDate):
-#         return getYieldCurveValues(curve, "discountFactor", refDate)[indexBefore]
-#
-#
-#     interpolationVariable = getIRInterpolVariable(interpolationIndex, curve, "discountFactor")
-#     interpolationMethod = getIRInterpolMethod(interpolationIndex, curve, "discountFactor")
-#     zeroCouponBasis = getYieldCurveParameter([curve, "discountFactor"], "zeroCouponBasis")
-#     if (interpolationVariable == "forwardRate"):
-#         return getDiscountFactorFromFwd(curve, refDate, interpDate, indexBefore, maturities, zeroCouponBasis,
-#                                         interpolationMethod)
-#     if (interpolationVariable == "forwardRate1D"):
-#         return getDiscountFactorFromDailyFwd(curve, "discountFactor", refDate, interpDate, indexBefore, matBefore,
-#                                              maturities[indexBefore + 1])
-#
-#
-#     values = getYieldCurveValues(curve, interpolationVariable, refDate)
-#     zeroCouponFormula = getYieldCurveParameter([curve, "discountFactor"], "zeroCouponFormula")
-#     secDerivFirstPt = metaData("YIELD_CURVE", [curve, "discountFactor"], "secDerivFirstPt", 0)
-#     secDerivLastPt = metaData("YIELD_CURVE", [curve, "discountFactor"], "secDerivLastPt", 0)
-#     compoundFrequency = metaData("YIELD_CURVE", [curve, "discountFactor"], "compoundFrequency", 1)
-#     dfInterpolParams = DfInterpolParams(refDateDays, zeroCouponBasis, zeroCouponFormula, compoundFrequency,
-#                      interpolationVariable, interpolationMethod, secDerivFirstPt, secDerivLastPt,
-#                      getSecondDerivative([curve, interpolationVariable]))
-#
-#     return discountFactorInterpolator(interpDate, maturities, values, dfInterpolParams, indexBefore)
-#
-#
-# def interpolationMetaIndexFromCurveSwitchDates(date, switchDatesIndex, maturities):
-# 	switchDatesIndexsize = len(switchDatesIndex)
-# 	for i in range( switchDatesIndexsize):
-# 		if (maturities[switchDatesIndex[i]] >= date):
-# 			return i
-# 	return switchDatesIndexsize
-#
-# def getDiscountFactorFromFwd(curve, refDate, interpDate, indexBefore, maturities, zeroCouponBasis, interpolationMethod):
-# 	values = data1D("YIELD_CURVE", [curve, "forwardRate", interpolationMethod], refDate)
-# 	discountValue = 1
-# 	matBefore = maturities[indexBefore]
-# 	matAfter  = maturities[indexBefore + 1]
-# 	valueBefore =  values[indexBefore]
-# 	valueAfter = values[indexBefore + 1]
-# 	fwd = 0
-# 	fromDate = matBefore
-#
-# 	if (interpDate > matAfter && interpolationMethod != "linear"):
-# 		discountValue = scenarioDataPoint("YIELD_CURVE", [curve, "discountFactor"], refDate, indexBefore + 1)
-#         fromDate = matAfter
-#     else:
-#         discountValue = scenarioDataPoint("YIELD_CURVE", [curve, "discountFactor"], refDate, indexBefore)
+import math
+from datetime import datetime
+import pandas as pd
+from quantools.analyticsTools.analyticsTools import yearFraction
+from quantools.library.utilities.interpolation import getInterpolatedValue, cubicSplineInterpolation, linearInterpolation
+from quantools.library.utilities.utilitiesAccessor import pointFloorIndex, getIndexBefore
+
+
+def discountFactorFromDays( ycValuesFor, ycDefFor, refDate,startDate, endDate):
+	return computeDiscountFactor( ycValuesFor, ycDefFor, refDate, endDate) / computeDiscountFactor( ycValuesFor, ycDefFor, refDate, startDate)
+
+
+def computeDiscountFactor( ycValuesFor, ycDefFor, refDate, discountDate):
+	if (discountDate > refDate):
+		return interpolateDFOnCurve(ycValuesFor, ycDefFor, discountDate, refDate)
+	return 1
+
+def getMaturity(ycDefFor):
+	return  [datetime.strptime(x,"%Y-%m-%d") for x in ycDefFor["maturities"] ]
+
+
+def interpolateDFOnCurve(values, ycDefFor, interpDate, refDate):
+	switchDates = [0,len(ycDefFor["maturities"])-1]
+	maturities = getMaturity(ycDefFor)
+	interpolationIndex = interpolationMetaIndexFromCurveSwitchDates(interpDate, switchDates, maturities)
+	indexBefore = getIndexBefore(pointFloorIndex(maturities, interpDate), len(maturities))
+	matBefore = maturities[indexBefore]
+	if (matBefore == interpDate):
+		return values[indexBefore]
+
+	interpolationVariable, interpolationMethod = ycDefFor["interpolation"]["variable"], ycDefFor["interpolation"]["method"]
+	zeroCouponBasis = ycDefFor["zeroCouponBasis"]
+	if (interpolationVariable == "FORWARD_RATE"):
+		pass
+		#return getDiscountFactorFromFwd(curve, refDate, interpDate, indexBefore, maturities, zeroCouponBasis,
+#                                          interpolationMethod)
+#      if (interpolationVariable == "forwardRate1D"):
+#          return getDiscountFactorFromDailyFwd(curve, "discountFactor", refDate, interpDate, indexBefore, matBefore,
+#                                               maturities[indexBefore + 1])
+
+	zeroCouponFormula = ycDefFor["zeroCouponFormula"]
+	secDerivFirstPt = ycDefFor["secDerivFirstPt"] if "secDerivFirstPt" in ycDefFor else 0
+	secDerivLastPt = ycDefFor["secDerivFirstPt"] if "secDerivLastPt" in ycDefFor else 0
+	secondDerivatives = ycDefFor["SECOND_DERIVATIVE"] if "SECOND_DERIVATIVE" in ycDefFor else []
+	DFtable = pd.DataFrame(data=[maturities,values],index=["maturities","DF"])
+	values = DFtable.apply(lambda x : ZCFormula(x["DF"],refDate, x["maturities"], zeroCouponBasis, zeroCouponFormula),axis=0)
+	compoundFrequency = ycDefFor["compoundFrequency"] if "compoundFrequency" in ycDefFor else 1
+	dfInterpolParams = DfInterpolParams(refDate, zeroCouponBasis, zeroCouponFormula, compoundFrequency,
+                       interpolationVariable, interpolationMethod, secDerivFirstPt, secDerivLastPt,
+                      secondDerivatives)
+
+	return discountFactorInterpolator(interpDate, maturities, values, dfInterpolParams, indexBefore)
 #
 #
-# 	if interpolationMethod=="linear":
-# 		fwd = fwdDFFromInstLinearForward(interpDate, matBefore, matAfter, valueBefore, valueAfter)
-# 	if interpolationMethod== "flatRight":
-# 		fwd = flatRightInterpolation(interpDate, matBefore, matAfter, valueBefore, valueAfter)
+def interpolationMetaIndexFromCurveSwitchDates(date, switchDatesIndex, maturities):
+	switchDatesIndexsize = len(switchDatesIndex)
+	for i in range( switchDatesIndexsize):
+		if (maturities[switchDatesIndex[i]] >= date):
+			return i
+	return switchDatesIndexsize
 #
-# 	return discountValue * math.exp(-yearFraction(daysToDate(fromDate), daysToDate(interpDate), zeroCouponBasis) * fwd)
+#  def getDiscountFactorFromFwd(curve, refDate, interpDate, indexBefore, maturities, zeroCouponBasis, interpolationMethod):
+#  	values = data1D("YIELD_CURVE", [curve, "forwardRate", interpolationMethod], refDate)
+#  	discountValue = 1
+#  	matBefore = maturities[indexBefore]
+#  	matAfter  = maturities[indexBefore + 1]
+#  	valueBefore =  values[indexBefore]
+#  	valueAfter = values[indexBefore + 1]
+#  	fwd = 0
+#  	fromDate = matBefore
 #
-# def getDiscountFactorFromDailyFwd(curve, curveType, refDate, interpDate, indexBefore, matBefore, matAfter):
-# 	lastDF = 1
-# 	fwdRate = 0
-# 	if (matBefore > interpDate):
-# 		matBefore = dateToDays(refDate)
-# 		fwdRate = scenarioDataPoint("YIELD_CURVE", [curve, "forwardRate1D"], refDate, indexBefore)
-# 	if (interpDate > matAfter) :
-# 		lastDF = scenarioDataPoint("YIELD_CURVE", [curve, "discountFactor"], refDate, indexBefore + 1)
-# 		fwdRate = scenarioDataPoint("YIELD_CURVE", [curve, "forwardRate1D"], refDate, indexBefore + 1)
-# 		matBefore = matAfter
-#
-# 	fwdRatesBasis = getYieldCurveParameter([curve, curveType], "fwdRatesBasis")
-# 	fwdRatesFormula = metaData("YIELD_CURVE", [curve, "discountFactor"], "fwdRatesFormula")
-#
-# 	lastDFNonBusinessDay = getDiscountFactor(matBefore, interpDate, lastDF, fwdRate, fwdRatesBasis, fwdRatesFormula)
-#
-# 	return lastDFNonBusinessDay
-#
-# def getDiscountFactor(start, end, lastDF, fwdRate, basis, fwdRatesFormula):
-# 	def factor = 0
-# 	if (fwdRatesFormula == "exponential") :
-# 		for  curDay in range( start + 1,end+1):
-# 			factor += yearFraction(daysToDate(curDay - 1), daysToDate(curDay), basis)
-#
-# 		return lastDF * math.exp(- fwdRate * factor)
+#  	if (interpDate > matAfter && interpolationMethod != "LINEAR"):
+#  		discountValue = scenarioDataPoint("YIELD_CURVE", [curve, "discountFactor"], refDate, indexBefore + 1)
+#          fromDate = matAfter
+#      else:
+#          discountValue = scenarioDataPoint("YIELD_CURVE", [curve, "discountFactor"], refDate, indexBefore)
 #
 #
-# 	factor = 1
-# 	# simple case
-# 	for curDay in range( start + 1, end+1):
-# 		factor *= (1 + fwdRate * yearFraction(daysToDate(curDay - 1), daysToDate(curDay), basis))
+#  	if interpolationMethod=="LINEAR":
+#  		fwd = fwdDFFromInstLinearForward(interpDate, matBefore, matAfter, valueBefore, valueAfter)
+#  	if interpolationMethod== "flatRight":
+#  		fwd = flatRightInterpolation(interpDate, matBefore, matAfter, valueBefore, valueAfter)
 #
-# 	return lastDF / factor
+#  	return discountValue * math.exp(-yearFraction(daysToDate(fromDate), daysToDate(interpDate), zeroCouponBasis) * fwd)
 #
-# class DfInterpolParams:
-# 	refDate = 0
-# 	basis = "default"
-# 	compoundFormula = "default"
-#     compoundFrequency = 1
-# 	interpolationVariable = "default"
-# 	interpolationMethod = "default"
-# 	secDerivFirstPt = 0
-# 	secDerivLastPt = 0
-# 	secondDerivatives = array(0,0)
+#  def getDiscountFactorFromDailyFwd(curve, curveType, refDate, interpDate, indexBefore, matBefore, matAfter):
+#  	lastDF = 1
+#  	fwdRate = 0
+#  	if (matBefore > interpDate):
+#  		matBefore = dateToDays(refDate)
+#  		fwdRate = scenarioDataPoint("YIELD_CURVE", [curve, "forwardRate1D"], refDate, indexBefore)
+#  	if (interpDate > matAfter) :
+#  		lastDF = scenarioDataPoint("YIELD_CURVE", [curve, "discountFactor"], refDate, indexBefore + 1)
+#  		fwdRate = scenarioDataPoint("YIELD_CURVE", [curve, "forwardRate1D"], refDate, indexBefore + 1)
+#  		matBefore = matAfter
+#
+#  	fwdRatesBasis = getYieldCurveParameter([curve, curveType], "fwdRatesBasis")
+#  	fwdRatesFormula = metaData("YIELD_CURVE", [curve, "discountFactor"], "fwdRatesFormula")
+#
+#  	lastDFNonBusinessDay = getDiscountFactor(matBefore, interpDate, lastDF, fwdRate, fwdRatesBasis, fwdRatesFormula)
+#
+#  	return lastDFNonBusinessDay
+#
+#  def getDiscountFactor(start, end, lastDF, fwdRate, basis, fwdRatesFormula):
+#  	def factor = 0
+#  	if (fwdRatesFormula == "EXPONENTIAL") :
+#  		for  curDay in range( start + 1,end+1):
+#  			factor += yearFraction(daysToDate(curDay - 1), daysToDate(curDay), basis)
+#
+#  		return lastDF * math.exp(- fwdRate * factor)
 #
 #
-# def discountFactorInterpolator(discountDate, maturities, values, dfInterpolParams, indexBefore):
-# 	df = 0
-# 	interpolationVariable =	dfInterpolParams.interpolationVariable
-# 	if (discountDate < maturities[0] and interpolationVariable != "zeroCouponRate"):
-# 		df = curveInterpolator(discountDate, dfInterpolParams.refDate, maturities[0],
-# 							   initDiscountFactorValue(interpolationVariable), values[0], dfInterpolParams, indexBefore,
-# 							   len(values))
-# 	if (len(values) == 1):
-# 		df = values[0]
-# 	else:
-# 		df = curveInterpolator(discountDate, maturities[indexBefore], maturities[indexBefore + 1], values[indexBefore],
-# 						   values[indexBefore + 1], dfInterpolParams, indexBefore, len(values))
+#  	factor = 1
+#  	 simple case
+#  	for curDay in range( start + 1, end+1):
+#  		factor *= (1 + fwdRate * yearFraction(daysToDate(curDay - 1), daysToDate(curDay), basis))
 #
-# 	return transformElementToDF(df, discountDate, dfInterpolParams, BasicYearFractionParameters())
+#  	return lastDF / factor
 #
-# def curveInterpolator(date, matBefore, matAfter, valueBefore, valueAfter, dfInterpolParams, indexBefore, nbValues):
-# 	if (dfInterpolParams.interpolationMethod == "cubicSpline"):
-# 		return getInterpolatedDFWithCubicSpline(nbValues, indexBefore, matBefore, matAfter, valueBefore, valueAfter, date, dfInterpolParams)
-# 	if (dfInterpolParams.interpolationMethod == "flatSpread"):
-# 		return flatSpreadInterpolation(date, matBefore, matAfter, valueBefore, valueAfter)
-# 	#linear or flat interpolation
-# 	return getInterpolatedValue(dfInterpolParams.interpolationMethod, date, matBefore, matAfter, valueBefore, valueAfter)
-#
-# def initDiscountFactorValue(interpolationVariable):
-# 	if(interpolationVariable == "logDiscountFactor"):
-# 		return 0
-# 	return 1
-# def getInterpolatedDFWithCubicSpline(nbTenors, indexBefore, pointBefore, pointAfter, valueBefore, valueAfter, point, dfInterpolParams):
-# 	if (nbTenors > 2):
-# 		return cubicSplineInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter, dfInterpolParams.secondDerivatives[indexBefore],
-# 				dfInterpolParams.secondDerivatives[indexBefore+1])
-#
-# 	return linearInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter)
-#
-# def flatSpreadInterpolation(x, x1, x2, y1, y2):
-# 	if (x1 == x2 or x == x1 or y1 == 0):
-# 		return y1
-# 	if (x == x2 or y2 == 0):
-# 		return y2
-# 	return 1 / ((x - x1) / (y2 * (x2 - x1)) + 1 / y1)
-#
-# def transformElementToDF(y, x, params, yfParams):
-# 	if params.interpolationVariable == "logDiscountFactor":
-# 		return math.exp(y)
-# 	if params.interpolationVariable == "zeroCouponRate":
-# 		return DFFormula(y, params.refDate, x, params.basis, yfParams, params.compoundFormula, params.compoundFrequency)
-# 	if params.interpolationVariable ==  "inverseDiscountFactor":
-# 		return 1 / y
-#
-# 	return y
-#
-# def DFFormula(zeroCouponRate, refDate, dfDate, basis, yfParams, compoundFormula, compoundFrequency):
-# 	yf = yfParams.yearFraction(daysToDate(refDate), daysToDate(dfDate), basis)
-# 	if compoundFormula=="exponential":
-# 		return math.exp(-zeroCouponRate * yf)
-# 	if compoundFormula =="compound":
-# 		return pow(1 / (1 + zeroCouponRate * compoundFrequency), yf / compoundFrequency)
-#
-# 	return 1 / (1 + zeroCouponRate * yf)
+class DfInterpolParams:
+	def __init__(self,refDate=0,basis="default",compoundFormula="default",compoundFrequency=1,interpolationVariable="default",interpolationMethod="default",secDerivFirstPt=0,secDerivLastPt=0, secondDerivatives=[]):
+		self.refDate = refDate
+		self.basis = basis
+		self.compoundFormula = compoundFormula
+		self.compoundFrequency = compoundFrequency
+		self.interpolationVariable = interpolationVariable
+		self.interpolationMethod = interpolationMethod
+		self.secDerivFirstPt = secDerivFirstPt
+		self.secDerivLastPt = secDerivLastPt
+		self.secondDerivatives = secondDerivatives
+
+
+def discountFactorInterpolator(discountDate, maturities, values, dfInterpolParams, indexBefore):
+	df = 0
+	interpolationVariable =	dfInterpolParams.interpolationVariable
+	if (discountDate < maturities[0] and interpolationVariable != "ZERO_COUPON_RATE"):
+		df = curveInterpolator(discountDate, dfInterpolParams.refDate, maturities[0],initDiscountFactorValue(interpolationVariable), values[0], dfInterpolParams, indexBefore,len(values))
+	if (len(values) == 1):
+		df = values[0]
+	else:
+		df = curveInterpolator(discountDate, maturities[indexBefore], maturities[indexBefore + 1], values[indexBefore],
+	 					   values[indexBefore + 1], dfInterpolParams, indexBefore, len(values))
+	return transformElementToDF(df, discountDate, dfInterpolParams)
+
+def curveInterpolator(date, matBefore, matAfter, valueBefore, valueAfter, dfInterpolParams, indexBefore, nbValues):
+	if (dfInterpolParams.interpolationMethod == "CUBIC_SPLINE"):
+		return getInterpolatedDFWithCubicSpline(nbValues, indexBefore, matBefore, matAfter, valueBefore, valueAfter, date, dfInterpolParams)
+	if (dfInterpolParams.interpolationMethod == "FLAT_SPREAD"):
+		return flatSpreadInterpolation(date, matBefore, matAfter, valueBefore, valueAfter)
+	#linear or flat interpolation
+	return getInterpolatedValue(dfInterpolParams.interpolationMethod, date, matBefore, matAfter, valueBefore, valueAfter)
+
+def initDiscountFactorValue(interpolationVariable):
+	if(interpolationVariable == "logDiscountFactor"):
+		return 0
+	return 1
+
+def getInterpolatedDFWithCubicSpline(nbTenors, indexBefore, pointBefore, pointAfter, valueBefore, valueAfter, point, dfInterpolParams):
+	if (nbTenors > 2):
+		return cubicSplineInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter, dfInterpolParams.secondDerivatives[indexBefore],
+				dfInterpolParams.secondDerivatives[indexBefore+1])
+
+	return linearInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter)
+
+def flatSpreadInterpolation(x, x1, x2, y1, y2):
+	if (x1 == x2 or x == x1 or y1 == 0):
+		return y1
+	if (x == x2 or y2 == 0):
+		return y2
+	return 1 / ((x - x1) / (y2 * (x2 - x1)) + 1 / y1)
+
+def transformElementToDF(y, x, params):
+	if params.interpolationVariable == "LOG_DISCOUNT_FACTOR":
+		return math.exp(y)
+	if params.interpolationVariable == "ZERO_COUPON_RATE":
+		return DFFormula(y, params.refDate, x, params.basis, params.compoundFormula, params.compoundFrequency)
+	if params.interpolationVariable ==  "INVERSE_DISCOUNT_FACTOR":
+		return 1 / y
+	return y
+
+def DFFormula(zeroCouponRate, refDate, dfDate, basis, compoundFormula, compoundFrequency):
+	yf = yearFraction(refDate, dfDate, basis)
+	if compoundFormula=="EXPONENTIAL":
+		return math.exp(-zeroCouponRate * yf)
+	if compoundFormula =="COMPOUND":
+		return pow(1 / (1 + zeroCouponRate * compoundFrequency), yf / compoundFrequency)
+
+	return 1 / (1 + zeroCouponRate * yf)
+
+def transformElementFromDF(y, x, params, yfParams, preprocessParams):
+	if params.interpolationVariable == "LOG_DISCOUNT_FACTOR":
+		return math.log(y)
+	if params.interpolationVariable == "ZERO_COUPON_RATE":
+		return ZCFormula(y, params.refDate, x, params.basis, params.compoundFormula)
+	if params.interpolationVariable == "INVERSE_DISCOUNT_FACTOR":
+		return 1 / y
+	# if params.interpolationVariable =="forwardRate1D":
+	# 	dailyForwardRate = implyForward(y / preprocessParams.prevDF, params.basis, params.compoundFormula, preprocessParams.prevDFDate, x)
+	# 	updateParams(preprocessParams, dailyForwardRate, x, y)
+	# 	return dailyForwardRate
+	# if params.interpolationVariable =="forwardRate":
+	# 	instantForwardRate = instantaneousForwardRate(y, x, params, yfParams, preprocessParams)
+	# 	updateParams(preprocessParams, instantForwardRate, x, y)
+	# 	return instantForwardRate
+	return y
+
+def updateParams(preprocessParams, instantForwardRate, x, y):
+	preprocessParams.previousForwardRateValue = instantForwardRate
+	preprocessParams.prevDFDate = x
+	preprocessParams.prevDF = y
+
+class PreprocessingParams:
+	def __init__(self,prevDF,prevDFDate,previousForwardRateValue):
+		self.prevDF = prevDF
+		self.prevDFDate = prevDFDate
+		self.previousForwardRateValue = previousForwardRateValue
+
+def ZCFormula(discountFactor, refDate, dfDate, basis, compoundFormula):
+	if (refDate == dfDate):
+		return 0
+	yf = yearFraction(refDate, dfDate, basis)
+	if compoundFormula=="EXPONENTIAL":
+		return -math.log(discountFactor) / yf
+	if compoundFormula=="COMPOUND":
+		return pow(1 / discountFactor, 1 / yf) - 1
+	if compoundFormula=="SIMPLE":
+		return (1 / discountFactor - 1) / yf
+

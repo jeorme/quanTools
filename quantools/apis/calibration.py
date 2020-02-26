@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from flask_restplus import Namespace,Resource, fields
 
-from quantools.library.fxvolCalibration.fxVolGood import constructFXVolSurface
+from quantools.library.fxvolCalibration.fxVol import constructFXVolSurface
 from quantools.library.fxvolCalibration.outputRestService import outputFxVolCalibrated
 from quantools.model.calibmodel.calibrationModel import mdValues, mdDef
 
@@ -13,7 +13,8 @@ class FxoVol(Resource):
     @api.response(200,"Success")
     @api.expect(api.model("example",{"asOfDate":fields.String,
     "marketDataDefinitions":fields.Raw(example=mdDef,type="json"),
-          "marketData"   :   fields.Raw(example=mdValues,type="json")                      }))
+          "marketData"   :   fields.Raw(example=mdValues,type="json")
+                                     }))
     def post(self):
         """
         interpolation : smile axis

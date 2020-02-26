@@ -1,5 +1,5 @@
 import json
-from quantools.library.fxvolCalibration.fxVolGood import constructFXVolSurface
+from quantools.library.fxvolCalibration.fxVol import constructFXVolSurface
 import unittest
 import numpy as np
 class calibOneExpiryOneVol(unittest.TestCase):

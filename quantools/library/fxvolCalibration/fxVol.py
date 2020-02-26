@@ -6,6 +6,11 @@ from quantools.analyticsTools.analyticsTools import yearFraction
 
 
 ### class definition
+from quantools.library.utilities.classObject import OptionDesc
+from quantools.library.utilities.interpolation import leeExtrapolation, getInterpolatedValue, cubicSplineInterpolation
+from quantools.library.utilities.solver import newtonSolver1D, findRoot
+from quantools.library.utilities.utilitiesAccessor import getIndexBefore, pointFloorIndex
+from yieldCurve import discountFactorFromDays
 
 class FxExpiryfxVolInfo:
     def __init__(self,forwardStrike, premiumAdjustmentIndicator,
@@ -21,13 +26,6 @@ class FxExpiryfxVolInfo:
         self.interpSpace = interpSpace
         self.atmVol = atmVol
         self.volId = volId
-
-class OptionDesc:
-    def __init__(self,callPutIndicator, bsStdDev, delta):
-	    self.callPutIndicator = callPutIndicator
-	    self.stdDeviation = bsStdDev
-	    self.delta = delta
-
 
 ##utilisties
 
@@ -143,15 +141,17 @@ def constructFXVolSurface(data):
         forCur = fxVol["foreignCurrencyId"]
         spotDate, underlyingSpotValue = getFxInput(fxVol["currencyPairId"],data["marketData"]["fxRates"])
         volatilityBasis = fxVol["basis"]
-        forDisc = fxVol["domesticDiscountId"]
+        ycValuesDom,ycDefDom = getYcInput(fxVol["domesticDiscountId"],data["marketData"]["yieldCurveValues"],data["marketDataDefinitions"]["yieldCurves"])
+        ycValuesFor, ycDefFor = getYcInput(fxVol["foreignDiscountId"], data["marketData"]["yieldCurveValues"],
+                                     data["marketDataDefinitions"]["yieldCurves"])
         domDisc = fxVol["foreignDiscountId"]
         smileCounter = 0
         premiumAdjustmentIndicator = fxVol["premiumAdjusted"] * 1.0
         isSmileBroker = fxVol["strategyConvention"] == "BROKER_STRANGLE"
         for smileLine in fxVol["expiries"]:
-            nbDaysDeliveryDate = smileLine["deliveryDate"]
-            dfFor = 0.9997194250025371 #discountFactorFromDays(forDisc, spotDate, nbDaysDeliveryDate)
-            dfDom = 0.9942786180585829 #discountFactorFromDays(domDisc, spotDate, nbDaysDeliveryDate)
+            deliveryDate = datetime.strptime(smileLine["deliveryDate"],"%Y-%m-%d")
+            dfFor = discountFactorFromDays( ycValuesFor, ycDefFor,asOfDate, spotDate, deliveryDate)
+            dfDom = discountFactorFromDays( ycValuesDom, ycDefDom,asOfDate, spotDate, deliveryDate)
             sqrtVolYearFraction = math.sqrt(yearFraction(asOfDate, datetime.strptime(smileLine["expiryDate"],"%Y-%m-%d"), volatilityBasis))
             forwardStrike = underlyingSpotValue * dfFor / dfDom
             fxVolInfo = FxExpiryfxVolInfo(forwardStrike, premiumAdjustmentIndicator,
@@ -166,10 +166,20 @@ def constructFXVolSurface(data):
         surfaces.append(surface)
     return surfaces
 
+def getYcInput(ycId,values,definitions):
+    outputDef = {}
+    for ycDef in definitions:
+        if ycId == ycDef["id"]:
+            outputDef = ycDef
+    for ycVal in values:
+        if ycId == ycVal["id"]:
+            return  ycVal["discountFactors"],outputDef
+    return outputDef
+
 def getFxInput(currencyPairId,fxRates):
     for fx in fxRates:
         if currencyPairId==fx["currencyPairId"]:
-            return fx["spotDate"],fx["quoteValue"]
+            return datetime.strptime(fx["spotDate"],"%Y-%m-%d"),fx["quoteValue"]
 
 def getExpirySmile(foreignCurrency, domesticCurrency, nbStrikesByExpiry, smileLine, fxVolInfo, fxVolTolerance,fxSpot, expirySmileCurve, isSmileB,marketData):
 
@@ -474,25 +484,6 @@ def initComonFxSmileInput(calibrationPoint, forwardStrike, sqrtVolYearFraction):
     commonInput.sqrtVolYearFraction = sqrtVolYearFraction
     return commonInput
 
-def pointFloorIndex(list, point):
-	if list[len(list)-1] < point:
-		return -2
-	return binary_search(list, point)
-
-
-def binary_search(Array, Search_Term):
-    n = len(Array)
-    if n== 0:
-        return 0
-    low = 0
-    while(n-low>1):
-        index = int((n+low)/2)
-        if Search_Term < Array[index]:
-            n = index
-        else:
-            low = index
-    return -1 if Array[low] > Search_Term else low
-
 class CommonFxSmileInputs:
     def __init__(self):
         self.smileAxis = np.zeros((1,2))
@@ -540,111 +531,6 @@ def getVolIndexBefore(pointFloorIndex, listLength):
 	if pointFloorIndex == listLength - 1:
 		return pointFloorIndex - 1
 	return getIndexBefore(pointFloorIndex, listLength)
-
-def getIndexBefore(pointFloorIndex, listLength):
-	if pointFloorIndex == -1:
-		return 0
-	if pointFloorIndex == -2:
-		return max(0, listLength - 2)
-	return pointFloorIndex
-
-
-def getInterpolatedValue(interpolationMethod, point, pointBefore, pointAfter, valueBefore, valueAfter):
-    if interpolationMethod == "LINEAR":
-        return linearInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter)
-    if interpolationMethod == "FLAT":
-            return flatInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter)
-    if interpolationMethod == "flatRight":
-        return flatRightInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter)
-    if interpolationMethod == "flatLeft":
-            return flatLeftInterpolation(point, pointBefore, pointAfter, valueBefore, valueAfter)
-
-def linearInterpolation(x, x1, x2, y1, y2):
-    if x1 == x2:
-        return y1
-    return ((x - x1) * y2 + (x2 - x) * y1) / (x2 - x1)
-
-def flatInterpolation(x, x1, x2, y1, y2):
-    if x <= x1:
-        return y1
-    if x < x2:
-        return (y1 + y2) / 2
-    return y2
-
-def flatRightInterpolation(x, x1, x2, y1, y2):
-    if x <= x1:
-        return y1
-    return y2
-
-def flatLeftInterpolation(x, x1, x2, y1, y2):
-    if x < x2:
-        return y1
-    return y2
-
-
-def leeExtrapolation(smileAxis, indexBefore, smilePoint, volValues, commonInput):
-    startIndex = indexBefore
-    endIndex = indexBefore + 1
-    if startIndex == 0:
-        endIndex = 0
-        startIndex = 1
-
-    forwardStrike = commonInput.forwardStrike
-    smileConventionInput = commonInput.smileConventionInput
-    deltaConvAdjInput = commonInput.deltaConvAdjInput
-    isPremiumInput = commonInput.isPremiumInput
-    sqrtVolYearFraction = commonInput.sqrtVolYearFraction
-
-    pillarEnd = convertPillarLeeExtrapolation(smileAxis[endIndex], deltaConvAdjInput, smileConventionInput, forwardStrike, isPremiumInput, sqrtVolYearFraction)
-    pillarStart = convertPillarLeeExtrapolation(smileAxis[startIndex], deltaConvAdjInput, smileConventionInput, forwardStrike, isPremiumInput, sqrtVolYearFraction)
-    pillar = convertPillarLeeExtrapolation(smilePoint, deltaConvAdjInput, smileConventionInput, forwardStrike, isPremiumInput, sqrtVolYearFraction)
-    volEnd = volValues[endIndex]
-
-    slope = (volValues[startIndex] - volEnd) / (pillarStart - pillarEnd)
-    return slope * commonInput.leeFactor * (pillar - pillarEnd) + volEnd
-
-def convertPillarLeeExtrapolation(pillar, deltaAdj, smileConvention, forwardStrike, isPremium, sqrtVolYearFraction):
-    if smileConvention == "strike":
-        return math.sqrt(abs(math.log(pillar/forwardStrike )))
-    if smileConvention == "logMoneyness":
-        return math.sqrt(abs(pillar))
-    if smileConvention == "DELTA_CALL" or smileConvention == "DELTA_PUT":
-        smileVal = -1 if smileConvention == "DELTA_PUT" else 1
-        return getLeeVolatilityForDelta(pillar, sqrtVolYearFraction, deltaAdj,smileVal , isPremium)
-
-
-def getLeeVolatilityForDelta(delta, bsStdDev, deltaConventionFactor, callPutIndicator, premiumAdjustmentIndicator):
-	if premiumAdjustmentIndicator == 1:
-		return math.sqrt(abs(computeLeeLogMoneynessFromAdjustedDelta(delta, bsStdDev, deltaConventionFactor, callPutIndicator)))
-
-	deltaAdjusted = delta / deltaConventionFactor
-	return abs(norm.ppf(abs(deltaAdjusted))) * getArbitrageFactor(deltaAdjusted, callPutIndicator)
-
-def computeLeeLogMoneynessFromAdjustedDelta(delta, bsStdDev, deltaConventionFactor, callPutIndicator):
-	option = OptionDesc(callPutIndicator, bsStdDev, delta)
-	delta = callPutIndicator * abs(delta) / deltaConventionFactor
-	return newtonSolver1D(delta, 0, 1e-8, 10, getPremiumAdjustedDeltaKernelLee, option, "unused", "unused")
-
-def getPremiumAdjustedDeltaKernelLee(x, optionDefinition, optional1, optional2):
-	bsDMinus = 0
-	if x!=0:
-		bsDMinus = (-x - abs(x)*0.5)/math.sqrt(abs(x))
-	return optionDefinition.callPutIndicator * math.exp(x) * norm.cdf(optionDefinition.callPutIndicator * bsDMinus)
-
-def getArbitrageFactor(pillar, callPutIndicator):
-	if pillar <= callPutIndicator * 0.5:
-		return 2
-	return 2 / 3
-
-def cubicSplineInterpolation(x, x1, x2, y1, y2, y1Second, y2Second):
-    if x1 == x2:
-        return y1
-    xDiff = x2 - x1
-    a = (x2 - x)/ xDiff
-    b = 1 - a
-    xSquare = xDiff * xDiff / 6
-    return a * y1 + b * y2 + xSquare * ((pow(a, 3) - a) *  y1Second + (pow(b, 3) - b) * y2Second)
-
 
 def computeStrategiesSolverJacobianFunction(problemDimension, currentPoint, commonInputs, instrumentsToFit, fx, jacobian,nbStrikesByExpiry):
     for j in range(problemDimension):
@@ -759,116 +645,3 @@ def updateOneSmileAxisElement(calibrationPoint, commonInputs, constraintLine, in
                 commonInputs.forwardStrike, commonInputs.deltaConventionAdjustment, callPutIndicator, commonInputs.premiumAdjustmentIndicator)
 
         calibrationPoint[2][strikeColumnIndexInTheSmile] = vol
-
-
-def newtonSolver1D(target, initialPoint, tolerance, maxNbIteration, function, argument1, argument2, argument3):
-    f0 = function(initialPoint, argument1, argument2, argument3)
-    epsilon = 0.00001
-    for k in range(maxNbIteration+1):
-        f1 = function(initialPoint + epsilon, argument1, argument2, argument3)
-        df =(f1 - f0) / epsilon
-        if (df == 0.0):
-            return -1
-        xkPlus1 = initialPoint + (target - f0) / df
-        fkPlus1 = function(xkPlus1, argument1, argument2, argument3)
-        if (abs(xkPlus1 - initialPoint) < tolerance):
-            return xkPlus1
-        initialPoint = xkPlus1
-        f0 = fkPlus1
-
-    return -1
-
-
-def findRoot(function, lowerBound, upperBound, context):
-    tolerance = pow(10,-6)
-    floatEpsilon = pow(10,-6)
-    maxIterations =100
-    d    = 0
-    e    = 0
-    min1 = 0
-    min2 = 0
-    fc   = 0
-    p    = 0
-    q    = 0
-    r    = 0
-    s    = 0
-    tol1 = 0
-    xm   = 0
-    a  = lowerBound
-    b  = upperBound
-    c  = upperBound
-    fa = function(a, context)
-    fb = function(b, context)
-
-    #check that bounds definitely include solution
-    if ((fa > 0 and fb > 0) or (fa < 0) and (fb < 0)):
-        return -1
-
-    # Attempt to find the solution
-    fc = fb
-    for i in range( maxIterations):
-        if ((fb > 0 and fc > 0) or (fb < 0 and fc < 0)):
-            c = a
-            fc = fa
-            d  = (b - a)
-            e = d
-
-        if (abs(fc) < abs(fb)):
-            a  = b
-            b  = c
-            c  = a
-            fa = fb
-            fb = fc
-            fc = fa
-
-
-        # Convergence check
-        tol1 = 2 * floatEpsilon * abs(b) + (0.5 * tolerance)
-        xm = 0.5 * (c - b)
-        if abs(xm) <= tol1 or fb == 0.0:
-            return b
-
-    # Attempt inverse quadratic interpolation
-        if ((abs(e) >= tol1) and (abs(fa) > abs(fb))):
-            s = fb / fa
-            if (a == c):
-                p = 2 * xm * s
-                q = 1 - s
-            else:
-                q = fa / fc
-                r = fb / fc
-                p = s * ((2 * xm * q * (q - r)) - ((b - a) * (r - 1)))
-                q = (q - 1) * (r - 1) * (s - 1)
-
-            # Check bounds
-            if (p > 0):
-                q = -q
-
-            p = abs(p)
-            min1 = (3 * xm * q) - abs(tol1 * q)
-            min2 = abs(e * q)
-            if (2 * p < min(min1, min2)):# Accept interpolation
-                e = d
-                d = p / q
-            else:#Interpolation failed, use bisection
-                d = xm
-                e = d
-
-        else:# Bounds decreasing too slowly, use bisection
-            d = xm
-            e = d
-
-        # Move last best guess to a
-        a = b
-        fa = fb
-        if (abs(d) > tol1):
-            b = b + d
-        else:
-            if (xm >= 0):
-                b = b + abs(tol1)
-            else:
-                b = b - abs(tol1)
-
-        fb = function(b, context)
-
-    return -1
