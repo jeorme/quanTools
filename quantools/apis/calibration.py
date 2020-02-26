@@ -2,6 +2,7 @@ from flask import request, jsonify
 from flask_restplus import Namespace,Resource, fields
 
 from quantools.library.fxvolCalibration.fxVolGood import constructFXVolSurface
+from quantools.library.fxvolCalibration.outputRestService import outputFxVolCalibrated
 from quantools.model.calibmodel.calibrationModel import mdValues, mdDef
 
 api = Namespace('calibration', 'FX vol')
@@ -21,11 +22,7 @@ class FxoVol(Resource):
         content = request.get_json()
         surface = constructFXVolSurface(content)
         # define model
-        output =  {}
-        index = 0
-        for fxvol in content["marketDataDefinitions"]["fxVolatilities"]:
-            output.update({fxvol["id"]:surface[index].tolist()})
-            index=index+1
+        output =  outputFxVolCalibrated(surface, content)
         return output
 
 @api.route('/heston')

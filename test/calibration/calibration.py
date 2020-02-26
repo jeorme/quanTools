@@ -11,6 +11,8 @@ class calibOneExpiryOneVol(unittest.TestCase):
         with open("calibration_fqp.json", "r") as file:
             data = json.load(file)
         surface = constructFXVolSurface(data)
+        for fxvol in data["marketDataDefinitions"]["fxVolatilities"]:
+            print("test")
         with open("output_calibration_fqp.json", "r") as file:
             output = json.load(file)
         # Vérifie que 'elt' est dans 'liste'

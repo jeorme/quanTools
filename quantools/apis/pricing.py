@@ -1,9 +1,8 @@
-import json
+from flask import request, jsonify
+from flask_restplus import Namespace, Resource, fields
 
 from quantools.pricing.Option import OptionSchema, blackScholesPricer
-from quantools.pricing.mathematicTools import *
-from flask import request, jsonify
-from flask_restplus import Namespace,Resource, fields
+
 api = Namespace('pricing', 'utilities ')
 
 
@@ -54,35 +53,3 @@ class Pricing(Resource):
         timeToSettle = content["timeToSettle"]
         # define model
         return jsonify({"NPV":foreignRate})
-
-@api.route('/normalCdf')
-class normalCDF(Resource):
-    @api.response(200,"Success")
-    @api.expect(api.model("input normal CDF",{"u" : fields.Float}))
-    def post(self):
-        """
-        normal cdf
-        :return: the normal cumulative distribution function
-        """
-        content = request.get_json()
-        u = content["u"]
-        cdf = normalCDF(u)
-        # define model
-        return jsonify({"normal cumulative":cdf})
-
-@api.route('/biNormalCdf')
-class biNormalCDF(Resource):
-    @api.response(200,"Success")
-    @api.expect(api.model("input bi normal CDF",{"x" : fields.Float,"y" : fields.Float,"rho" : fields.Float,}))
-    def post(self):
-        """
-        normal cdf
-        :return: the normal cumulative distribution function
-        """
-        content = request.get_json()
-        x = content["x"]
-        y = content["y"]
-        rho = content["rho"]
-        cdf = bivariateCND(x,y,rho)
-        # define model
-        return jsonify({"bi normal cumulative":cdf})

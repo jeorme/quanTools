@@ -1,5 +1,3 @@
-import json
-
 from flask import request, jsonify
 from flask_restplus import Namespace,Resource, fields
 api = Namespace('interpolation', 'FX vol')
