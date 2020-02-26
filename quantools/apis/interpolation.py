@@ -4,7 +4,7 @@ from flask import request, jsonify
 from flask_restplus import Namespace,Resource, fields
 
 from quantools.model.ycModel.ycDef import yieldCurveDef, yieldCurveValues
-from yieldCurve import  computeDiscountFactor
+from quantools.library.fxvolCalibration.yieldCurve import  computeDiscountFactor
 
 api = Namespace('interpolation', 'marketData : FX Vol, Yield Curve')
 

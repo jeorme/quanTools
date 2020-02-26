@@ -3,14 +3,12 @@ import numpy as np
 from datetime import datetime
 from scipy.stats import norm
 from quantools.analyticsTools.analyticsTools import yearFraction
-
-
-### class definition
 from quantools.library.utilities.classObject import OptionDesc
 from quantools.library.utilities.interpolation import leeExtrapolation, getInterpolatedValue, cubicSplineInterpolation
 from quantools.library.utilities.solver import newtonSolver1D, findRoot
 from quantools.library.utilities.utilitiesAccessor import getIndexBefore, pointFloorIndex
-from yieldCurve import discountFactorFromDays
+from quantools.library.fxvolCalibration.yieldCurve import discountFactorFromDays
+
 
 class FxExpiryfxVolInfo:
     def __init__(self,forwardStrike, premiumAdjustmentIndicator,
