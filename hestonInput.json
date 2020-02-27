@@ -1,25 +1,4 @@
 {
-  "marketDataSet": "DEFAULT",
-  "marketDataProvider": "PE_STORE_MDP",
-  "calibrationDate": "2016-07-05",
-  "inputs": [
-    {
-      "volatilityName": "GBPUSD_VOL",
-      "parameters": {
-        "initialization": false,
-        "calibrateKappa": true,
-        "v0Tenor": "1m"
-      }
-    },
-    {
-      "volatilityName": "EURGBP_VOL",
-      "parameters": {
-        "initialization": false,
-        "calibrateKappa": true,
-        "v0Tenor": "1m"
-      }
-    }
-  ],
   "marketData": {
     "fxRates": [
       {
@@ -35,122 +14,6 @@
     ],
     "fxVolatilities": {
       "EURGBP_VOL": {
-        "holidays": [
-          {
-            "date": "2016-01-01",
-            "name": "New Year’s Day ",
-            "weight": -1
-          },
-          {
-            "date": "2016-03-25",
-            "name": "Good Friday ",
-            "weight": -1
-          },
-          {
-            "date": "2016-03-28",
-            "name": "Easter Monday ",
-            "weight": -1
-          },
-          {
-            "date": "2016-05-01",
-            "name": "Labor Day ",
-            "weight": -1
-          },
-          {
-            "date": "2016-12-25",
-            "name": "Christmas ",
-            "weight": -1
-          },
-          {
-            "date": "2016-12-26",
-            "name": "Boxing Day ",
-            "weight": -1
-          },
-          {
-            "date": "2017-01-01",
-            "name": "New Year's Day",
-            "weight": -1
-          },
-          {
-            "date": "2017-01-01",
-            "name": "New Year's Day",
-            "weight": -1
-          }
-        ],
-        "marketEvents": [
-          {
-            "end": "2016-07-07",
-            "name": "ECB",
-            "start": "2016-07-07",
-            "weight": 3.5
-          },
-          {
-            "end": "2016-08-18",
-            "name": "ECB",
-            "start": "2016-08-18",
-            "weight": 6
-          },
-          {
-            "end": "2016-10-06",
-            "name": "ECB",
-            "start": "2016-10-06",
-            "weight": 3.7
-          },
-          {
-            "end": "2016-11-17",
-            "name": "ECB",
-            "start": "2016-11-17",
-            "weight": 4.5
-          },
-          {
-            "end": "2017-01-12",
-            "name": "ECB",
-            "start": "2017-01-12",
-            "weight": 5.7
-          },
-          {
-            "end": "2017-02-16",
-            "name": "ECB",
-            "start": "2017-02-16",
-            "weight": 5.9
-          },
-          {
-            "end": "2017-04-06",
-            "name": "ECB",
-            "start": "2017-04-06",
-            "weight": 7
-          },
-          {
-            "end": "2017-05-18",
-            "name": "ECB",
-            "start": "2017-05-18",
-            "weight": 6.9
-          },
-          {
-            "end": "2017-07-06",
-            "name": "ECB",
-            "start": "2017-07-06",
-            "weight": 4.5
-          },
-          {
-            "end": "2017-08-17",
-            "name": "ECB",
-            "start": "2017-08-17",
-            "weight": 3.4
-          },
-          {
-            "end": "2017-10-05",
-            "name": "ECB",
-            "start": "2017-10-05",
-            "weight": 4.9
-          },
-          {
-            "end": "2017-11-23",
-            "name": "ECB",
-            "start": "2017-11-23",
-            "weight": 5.3
-          }
-        ],
         "smileAxis": "deltaPut",
         "values": {
           "2016-07-12": {
@@ -755,240 +618,9 @@
               0.14562
             ]
           }
-        },
-        "weekDayPattern": [
-          {
-            "end": "Sunday 22:00:00",
-            "start": "Sunday 00:00:00",
-            "weight": 0.2
-          },
-          {
-            "end": "Sunday 00:00:00",
-            "start": "Friday 22:00:00",
-            "weight": 1
-          },
-          {
-            "end": "Friday 22:00:00",
-            "start": "Sunday 00:00:00",
-            "weight": 0.2
-          }
-        ]
+        }
       },
       "GBPUSD_VOL": {
-        "holidays": [
-          {
-            "date": "2017-01-01",
-            "name": "New Year's Day",
-            "weight": -1
-          },
-          {
-            "date": "2016-01-01",
-            "name": "New Year's Day",
-            "weight": -1
-          },
-          {
-            "date": "2016-01-18",
-            "name": "Martin Luther King, Jr. Day",
-            "weight": -1
-          },
-          {
-            "date": "2016-02-15",
-            "name": "Washington's Birthday",
-            "weight": -1
-          },
-          {
-            "date": "2016-05-30",
-            "name": "Memorial Day",
-            "weight": -1
-          },
-          {
-            "date": "2016-07-04",
-            "name": "Independence Day",
-            "weight": -1
-          },
-          {
-            "date": "2016-09-05",
-            "name": "Labor Day",
-            "weight": -1
-          },
-          {
-            "date": "2016-10-10",
-            "name": "Columbus Day",
-            "weight": -1
-          },
-          {
-            "date": "2016-11-11",
-            "name": "Veterans Day",
-            "weight": -1
-          },
-          {
-            "date": "2016-11-24",
-            "name": "Thanksgiving Day",
-            "weight": -1
-          },
-          {
-            "date": "2016-12-25",
-            "name": "Christmas (Christmas Day)",
-            "weight": -1
-          },
-          {
-            "date": "2017-01-01",
-            "name": "New Year's Day",
-            "weight": -1
-          }
-        ],
-        "marketEvents": [
-          {
-            "end": "2016-07-15",
-            "name": "US CPI",
-            "start": "2016-07-15",
-            "weight": 1.1
-          },
-          {
-            "end": "2016-07-26",
-            "name": "FOMC ",
-            "start": "2016-07-26",
-            "weight": 7
-          },
-          {
-            "end": "2016-08-16",
-            "name": "US CPI",
-            "start": "2016-08-16",
-            "weight": 1.5
-          },
-          {
-            "end": "2016-09-16",
-            "name": "US CPI",
-            "start": "2016-09-16",
-            "weight": 1.2
-          },
-          {
-            "end": "2016-09-20",
-            "name": "FOMC ",
-            "start": "2016-09-20",
-            "weight": 7.6
-          },
-          {
-            "end": "2016-10-18",
-            "name": "US CPI",
-            "start": "2016-10-18",
-            "weight": 1.2
-          },
-          {
-            "end": "2016-11-17",
-            "name": "US CPI",
-            "start": "2016-11-17",
-            "weight": 1.5
-          },
-          {
-            "end": "2016-11-01",
-            "name": "FOMC ",
-            "start": "2016-11-01",
-            "weight": 7.7
-          },
-          {
-            "end": "2016-12-13",
-            "name": "FOMC ",
-            "start": "2016-12-13",
-            "weight": 5.5
-          },
-          {
-            "end": "2016-12-15",
-            "name": "US CPI",
-            "start": "2016-12-15",
-            "weight": 1.9
-          },
-          {
-            "end": "2017-01-18",
-            "name": "US CPI",
-            "start": "2017-01-18",
-            "weight": 1.5
-          },
-          {
-            "end": "2017-01-31",
-            "name": "FOMC ",
-            "start": "2017-01-31",
-            "weight": 5.2
-          },
-          {
-            "end": "2017-02-15",
-            "name": "US CPI",
-            "start": "2017-02-15",
-            "weight": 1.6
-          },
-          {
-            "end": "2017-03-14",
-            "name": "FOMC ",
-            "start": "2017-03-14",
-            "weight": 6.6
-          },
-          {
-            "end": "2017-03-15",
-            "name": "US CPI",
-            "start": "2017-03-15",
-            "weight": 1.6
-          },
-          {
-            "end": "2017-04-14",
-            "name": "US CPI",
-            "start": "2017-04-14",
-            "weight": 1.5
-          },
-          {
-            "end": "2017-05-02",
-            "name": "FOMC ",
-            "start": "2017-05-02",
-            "weight": 5.9
-          },
-          {
-            "end": "2017-05-12",
-            "name": "US CPI",
-            "start": "2017-05-12",
-            "weight": 1.6
-          },
-          {
-            "end": "2017-06-13",
-            "name": "FOMC ",
-            "start": "2017-06-13",
-            "weight": 7.6
-          },
-          {
-            "end": "2017-06-14",
-            "name": "US CPI",
-            "start": "2017-06-14",
-            "weight": 1.3
-          },
-          {
-            "end": "2017-07-14",
-            "name": "US CPI",
-            "start": "2017-07-14",
-            "weight": 1.9
-          },
-          {
-            "end": "2017-07-25",
-            "name": "FOMC ",
-            "start": "2017-07-25",
-            "weight": 8.1
-          },
-          {
-            "end": "2017-09-19",
-            "name": "FOMC ",
-            "start": "2017-09-19",
-            "weight": 5.5
-          },
-          {
-            "end": "2017-10-31",
-            "name": "FOMC ",
-            "start": "2017-10-31",
-            "weight": 9.5
-          },
-          {
-            "end": "2017-12-12",
-            "name": "FOMC ",
-            "start": "2017-12-12",
-            "weight": 9.3
-          }
-        ],
         "smileAxis": "deltaCall",
         "values": {
           "2016-07-12": {
@@ -1937,24 +1569,7 @@
               0.1355
             ]
           }
-        },
-        "weekDayPattern": [
-          {
-            "end": "Sunday 22:00:00",
-            "start": "Sunday 00:00:00",
-            "weight": 0.2
-          },
-          {
-            "end": "Sunday 00:00:00",
-            "start": "Friday 22:00:00",
-            "weight": 1
-          },
-          {
-            "end": "Friday 22:00:00",
-            "start": "Sunday 00:00:00",
-            "weight": 0.2
-          }
-        ]
+        }
       }
     },
     "yieldCurves": {
@@ -2045,5 +1660,26 @@
         "valuesType": "discountFactor"
       }
     }
-  }
+  },
+  "marketDataSet": "DEFAULT",
+  "marketDataProvider": "PE_STORE_MDP",
+  "calibrationDate": "2016-07-05",
+  "inputs": [
+    {
+      "volatilityName": "GBPUSD_VOL",
+      "parameters": {
+        "initialization": false,
+        "calibrateKappa": true,
+        "v0Tenor": "1m"
+      }
+    },
+    {
+      "volatilityName": "EURGBP_VOL",
+      "parameters": {
+        "initialization": false,
+        "calibrateKappa": true,
+        "v0Tenor": "1m"
+      }
+    }
+  ]
 }

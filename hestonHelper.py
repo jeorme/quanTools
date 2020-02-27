@@ -5,58 +5,62 @@
 # 	pointFloorIndex, getVolIndexBefore, getInterpolatedValue
 #
 # from quantools.analyticsTools.analyticsTools import yearFraction
-#
-#
-# def calibrateHestonModel(surface, solver, weightType, upperBounds, lowerBounds, nbParameters) :
-# 	surfaceTenors = metaData("FX_VOLATILITY", [surface], "expiries")
-# 	tenorsAsDays = getVolatilitySurfaceExpiryAxis(surface, "FX_VOLATILITY")
-# 	smileLength = len(axis("FX_VOLATILITY", [surface, surfaceTenors[0]], 0))
-# 	volatilityBasis = metaData("FX_VOLATILITY", [surface], "volatilityBasis")
-# 	nbExpiries = len(tenorsAsDays)
-# 	smileAxisType = metaData("FX_VOLATILITY", [surface], "smileAxis")
-# 	callOrPut = -1 if smileAxisType== "deltaPut" else 1
-# 	spotDate = getSpotDate(metaData(surfaceType, [surfaceName], "foreignCurrency"), metaData(surfaceType, [surfaceName], "domesticCurrency"))
-# 	foreignCurve = metaData("FX_VOLATILITY", [surface], "foreignCurve")
-# 	domesticCurve = metaData("FX_VOLATILITY", [surface], "domesticCurve")
-# 	spotRate = getFxRate(metaData(surfaceType, [surfaceName], "foreignCurrency"), metaData(surfaceType, [surfaceName], "domesticCurrency"), date)
-# 	deliveriesAsDays = getVolatilitySurfaceDeliveries(surface, "FX_VOLATILITY")
-# 	isPremiumAdjusted = boolToInt(metaData("FX_VOLATILITY", [surface], "premiumAdjusted"))
-# 	calcDate = dateToDays(calculationDate())
-#
-# 	size = nbExpiries * smileLength
-# 	mktStrikes = np.zeros((1,size))
-# 	mktVols = np.zeros((1,size))
-# 	forwards = np.zeros(1,nbExpiries)
-# 	expiries = np.zeros((1,nbExpiries))
-# 	dfs = np.zeros((1,nbExpiries))
-# 	weights = np.ones((size,1))* math.sqrt(1.0 / size)
-#
-# 	for i in range(nbExpiries):
-# 		yfExpiry = yearFraction(calculationDate(), daysToDate(tenorsAsDays[i]), volatilityBasis)
-# 		expiries[i] = yfExpiry
-# 		refTenor = surfaceTenors[i]
-# 		deliveryAsDays = deliveriesAsDays[i]
-# 		smileAxis = getVolatilitySmileAxis(surface, "FX_VOLATILITY", refTenor)
-# 		volValues = getVolatilitySmileValues(surface, "FX_VOLATILITY", refTenor)
-# 		dfFor = discountFactorFromDays(foreignCurve, spotDate, deliveryAsDays)
-# 		dfDom = discountFactorFromDays(domesticCurve, spotDate, deliveryAsDays)
-# 		dfDomPv = computeDiscountFactor(domesticCurve, calcDate, deliveryAsDays)
-# 		forward = spotRate * dfFor / dfDom
-# 		dfs[i] = dfDomPv
-# 		forwards[i] = forward
-# 		deltaConvFactor = getDeltaConventionAdjustment(metaData("FX_VOLATILITY", [surface, refTenor], "smileConvention"), dfFor)
-# 		sqrtYf = math.sqrt(yfExpiry)
-#
-# 		for j in range(smileLength):
-# 			vol = volValues[j]
-# 			strike = getStrikeFromSmileAxis(smileAxisType, forward, smileAxis[j], vol * sqrtYf, deltaConvFactor, isPremiumAdjusted, callOrPut)
-# 			index = i * smileLength + j
-# 			mktStrikes[index] = strike
-# 			mktVols[index] = vol
-# 			if (weightType == "vega"):
-# 				weights[index] = 1 / math.sqrt(getNormedBlackVega(vol * sqrtYf, strike / forward, sqrtYf) * dfDomPv * forward)
-#
-#
+#def calibrateHestonModel(surface, solver, weightType, upperBounds, lowerBounds, nbParameters):
+def calibrateHestonModel(fxVol,yieldCurves,fxRate,calibrationDate,parameters):
+    tenorsAsDays = fxVol["marketData"]["fxVolatilities"]["EURGBP_VOL"]["values"].keys()
+    smileLength = len(axis("FX_VOLATILITY", [surface, surfaceTenors[0]], 0))
+    volatilityBasis = metaData("FX_VOLATILITY", [surface], "volatilityBasis")
+    # nbExpiries = len(tenorsAsDays)
+    # smileAxisType = metaData("FX_VOLATILITY", [surface], "smileAxis")
+    # callOrPut = -1 if smileAxisType == "deltaPut" else 1
+    # spotDate = getSpotDate(metaData(surfaceType, [surfaceName], "foreignCurrency"),
+    #                        metaData(surfaceType, [surfaceName], "domesticCurrency"))
+    # foreignCurve = metaData("FX_VOLATILITY", [surface], "foreignCurve")
+    # domesticCurve = metaData("FX_VOLATILITY", [surface], "domesticCurve")
+    # spotRate = getFxRate(metaData(surfaceType, [surfaceName], "foreignCurrency"),
+    #                      metaData(surfaceType, [surfaceName], "domesticCurrency"), date)
+    # deliveriesAsDays = getVolatilitySurfaceDeliveries(surface, "FX_VOLATILITY")
+    # isPremiumAdjusted = boolToInt(metaData("FX_VOLATILITY", [surface], "premiumAdjusted"))
+    # calcDate = dateToDays(calculationDate())
+    #
+    # size = nbExpiries * smileLength
+    # mktStrikes = np.zeros((1, size))
+    # mktVols = np.zeros((1, size))
+    # forwards = np.zeros(1, nbExpiries)
+    # expiries = np.zeros((1, nbExpiries))
+    # dfs = np.zeros((1, nbExpiries))
+    # weights = np.ones((size, 1)) * math.sqrt(1.0 / size)
+    #
+    # for i in range(nbExpiries):
+    #     yfExpiry = yearFraction(calculationDate(), daysToDate(tenorsAsDays[i]), volatilityBasis)
+    #     expiries[i] = yfExpiry
+    #     refTenor = surfaceTenors[i]
+    #     deliveryAsDays = deliveriesAsDays[i]
+    #     smileAxis = getVolatilitySmileAxis(surface, "FX_VOLATILITY", refTenor)
+    #     volValues = getVolatilitySmileValues(surface, "FX_VOLATILITY", refTenor)
+    #     dfFor = discountFactorFromDays(foreignCurve, spotDate, deliveryAsDays)
+    #     dfDom = discountFactorFromDays(domesticCurve, spotDate, deliveryAsDays)
+    #     dfDomPv = computeDiscountFactor(domesticCurve, calcDate, deliveryAsDays)
+    #     forward = spotRate * dfFor / dfDom
+    #     dfs[i] = dfDomPv
+    #     forwards[i] = forward
+    #     deltaConvFactor = getDeltaConventionAdjustment(
+    #         metaData("FX_VOLATILITY", [surface, refTenor], "smileConvention"), dfFor)
+    #     sqrtYf = math.sqrt(yfExpiry)
+    #
+    #     for j in range(smileLength):
+    #         vol = volValues[j]
+    #         strike = getStrikeFromSmileAxis(smileAxisType, forward, smileAxis[j], vol * sqrtYf, deltaConvFactor,
+    #                                         isPremiumAdjusted, callOrPut)
+    #         index = i * smileLength + j
+    #         mktStrikes[index] = strike
+    #         mktVols[index] = vol
+    #         if (weightType == "vega"):
+    #             weights[index] = 1 / math.sqrt(
+    #                 getNormedBlackVega(vol * sqrtYf, strike / forward, sqrtYf) * dfDomPv * forward)
+
+
+
 # 	# initialVolATM is the first available by default.
 # 	initialVolATM = 0
 # 	if (isDefined(shortVolDays)) :
