@@ -3,9 +3,9 @@ def outputFxVolCalibrated(result,data):
     output the calibrated fx vol in the proper format
     """
     output = {"fxVolatilitiesValues":[]}
+    indexVol = 0
     for fxvol in data["marketDataDefinitions"]["fxVolatilities"]:
         output["fxVolatilitiesValues"].append({"id":fxvol["id"],"date" : data["asOfDate"],"values":{}})
-        indexVol = 0
         volValues = result[indexVol]
         jump =0
         for expiry in fxvol["expiries"]:
