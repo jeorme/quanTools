@@ -32,6 +32,7 @@ mdDef = {
             "id": "EURGBP_Volatility",
             "domesticCurrencyId": "GBP",
             "domesticDiscountId": "gbpDiscount",
+            "smileAxis" : ["DELTA_CALL","DELTA_PUT"],
             "expiries": [
                 {
                     "atmConvention": "FORWARD",

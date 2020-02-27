@@ -35,3 +35,4 @@ class FxVolatilitiesDef(Schema):
     smileInterpolationVariable = fields.Nested(expiryInterpolationVariable)
     strategyConvention = fields.Nested(StrategyConvention)
     surfaceType = fields.Nested(SurfaceType)
+    smileAxis = fields.Nested(SmileInterpolationVariable)

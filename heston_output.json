@@ -1,0 +1,26 @@
+{
+  "calibrationResults": [
+    {
+      "volatilityName": "GBPUSD_VOL",
+      "hestonParameters": {
+        "v0": 0.027805562500000002,
+        "rho": -0.362511964539753,
+        "sigma": 0.5911722996632784,
+        "theta": 0.020050960832903197,
+        "kappa": 2.8035909487152457
+      },
+      "errors": []
+    },
+    {
+      "volatilityName": "EURGBP_VOL",
+      "hestonParameters": {
+        "v0": 0.021608999999999996,
+        "rho": 0.3147129513266975,
+        "sigma": 0.49979513057536284,
+        "theta": 0.014938480129639073,
+        "kappa": 3.283018753779074
+      },
+      "errors": []
+    }
+  ]
+}
