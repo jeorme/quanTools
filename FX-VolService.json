@@ -1,0 +1,921 @@
+{
+  "nbMaxPointsPerExpiry": 20,
+  "volatilitySurface": "EUR_GBP_VOL",
+  "expiryPoints": [
+    {
+      "expiry": "2011-02-11",
+      "delivery": "2011-02-11",
+      "pointsDetails": {
+        "atmConvention": "deltaNeutralStraddle",
+        "deltaConvention": "forward",
+        "inverseCurrency": false,
+        "premiumAdjusted": false
+      },
+      "points": []
+    },
+    {
+      "expiry": "2011-03-19",
+      "delivery": "2011-03-19",
+      "pointsDetails": {
+        "atmConvention": "deltaNeutralStraddle",
+        "deltaConvention": "forward",
+        "inverseCurrency": false,
+        "premiumAdjusted": false
+      },
+      "points": []
+    },
+    {
+      "expiry": "2011-04-21",
+      "delivery": "2011-04-21",
+      "pointsDetails": {
+        "atmConvention": "deltaNeutralStraddle",
+        "deltaConvention": "forward",
+        "inverseCurrency": false,
+        "premiumAdjusted": false
+      },
+      "points": []
+    },
+    {
+      "expiry": "2011-03-04",
+      "delivery": "2011-03-04",
+      "pointsDetails": {
+        "requestType": "deltaCall",
+        "deltaConvention": "spot",
+        "inverseCurrency": false,
+        "premiumAdjusted": false
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.95
+      ]
+    },
+    {
+      "expiry": "2011-03-04",
+      "delivery": "2011-03-04",
+      "pointsDetails": {
+        "requestType": "deltaCall",
+        "deltaConvention": "spot",
+        "inverseCurrency": false,
+        "premiumAdjusted": true
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-03-04",
+      "delivery": "2011-03-04",
+      "pointsDetails": {
+        "requestType": "deltaCall",
+        "deltaConvention": "forward",
+        "inverseCurrency": false,
+        "premiumAdjusted": false
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-03-04",
+      "delivery": "2011-03-04",
+      "pointsDetails": {
+        "requestType": "deltaCall",
+        "deltaConvention": "forward",
+        "inverseCurrency": false,
+        "premiumAdjusted": true
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-03-04",
+      "delivery": "2011-03-04",
+      "pointsDetails": {
+        "requestType": "deltaPut",
+        "deltaConvention": "spot",
+        "inverseCurrency": false,
+        "premiumAdjusted": false
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-03-04",
+      "delivery": "2011-03-04",
+      "pointsDetails": {
+        "requestType": "deltaPut",
+        "deltaConvention": "spot",
+        "inverseCurrency": false,
+        "premiumAdjusted": true
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-03-04",
+      "delivery": "2011-03-04",
+      "pointsDetails": {
+        "requestType": "deltaPut",
+        "deltaConvention": "forward",
+        "inverseCurrency": false,
+        "premiumAdjusted": false
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-03-04",
+      "delivery": "2011-03-04",
+      "pointsDetails": {
+        "requestType": "deltaPut",
+        "deltaConvention": "forward",
+        "inverseCurrency": false,
+        "premiumAdjusted": true
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-05-03",
+      "delivery": "2011-05-03",
+      "pointsDetails": {
+        "requestType": "deltaCall",
+        "deltaConvention": "forward",
+        "inverseCurrency": false,
+        "premiumAdjusted": true
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-02-09",
+      "delivery": "2011-02-09",
+      "pointsDetails": {
+        "requestType": "deltaCall",
+        "deltaConvention": "forward",
+        "inverseCurrency": false,
+        "premiumAdjusted": true
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-04-03",
+      "delivery": "2011-04-03",
+      "pointsDetails": {
+        "requestType": "deltaCall",
+        "deltaConvention": "forward",
+        "inverseCurrency": false,
+        "premiumAdjusted": true
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-05-03",
+      "delivery": "2011-05-03",
+      "pointsDetails": {
+        "requestType": "deltaCall",
+        "deltaConvention": "forward",
+        "inverseCurrency": false,
+        "premiumAdjusted": true
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-04-18",
+      "delivery": "2011-04-18",
+      "pointsDetails": {
+        "requestType": "deltaCall",
+        "deltaConvention": "forward",
+        "inverseCurrency": false,
+        "premiumAdjusted": true
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-03-04",
+      "delivery": "2011-03-04",
+      "pointsDetails": {
+        "requestType": "strike",
+        "inverseCurrency": false
+      },
+      "points": [
+        0.7142,
+        0.7287,
+        0.74363,
+        0.75881,
+        0.774298,
+        0.7901,
+        0.8062,
+        0.82267,
+        0.839468,
+        0.8566,
+        0.8740816,
+        0.89192,
+        0.910122,
+        0.928696,
+        0.9476494,
+        0.9669891,
+        0.986724,
+        1.006861,
+        1.027401
+      ]
+    },
+    {
+      "expiry": "2011-03-04",
+      "delivery": "2011-03-04",
+      "pointsDetails": {
+        "requestType": "logMoneyness",
+        "sliceType": "delta",
+        "inverseCurrency": false
+      },
+      "points": [
+        -0.0789653,
+        -0.0701913,
+        -0.061417,
+        -0.052643,
+        -0.0438696,
+        -0.0350957,
+        -0.0263218,
+        -0.0175478,
+        -0.008774,
+        0,
+        0.0087734,
+        0.0175478,
+        0.02632177,
+        0.0350957,
+        0.0438696,
+        0.0526435,
+        0.061417,
+        0.0701914,
+        0.07897
+      ]
+    },
+    {
+      "expiry": "2011-03-04",
+      "delivery": "2011-03-04",
+      "pointsDetails": {
+        "requestType": "strike",
+        "sliceType": "logMoneyness",
+        "inverseCurrency": false
+      },
+      "points": [
+        0.7142,
+        0.7287,
+        0.74363,
+        0.75881,
+        0.774298,
+        0.7901,
+        0.8062,
+        0.82267,
+        0.839468,
+        0.8566,
+        0.8740816,
+        0.89192,
+        0.910122,
+        0.928696,
+        0.9476494,
+        0.9669891,
+        0.986724,
+        1.006861,
+        1.027401
+      ]
+    },
+    {
+      "expiry": "2011-03-04",
+      "delivery": "2011-03-04",
+      "pointsDetails": {
+        "requestType": "logMoneyness",
+        "sliceType": "strike",
+        "inverseCurrency": false
+      },
+      "points": [
+        -0.0789653,
+        -0.0701913,
+        -0.061417,
+        -0.052643,
+        -0.0438696,
+        -0.0350957,
+        -0.0263218,
+        -0.0175478,
+        -0.008774,
+        0,
+        0.0087734,
+        0.0175478,
+        0.02632177,
+        0.0350957,
+        0.0438696,
+        0.0526435,
+        0.061417,
+        0.0701914,
+        0.07897
+      ]
+    },
+    {
+      "expiry": "2011-03-18",
+      "delivery": "2011-03-18",
+      "pointsDetails": {
+        "requestType": "strike",
+        "inverseCurrency": false
+      },
+      "points": [
+        0.7142,
+        0.7287,
+        0.74363,
+        0.75881,
+        0.774298,
+        0.7901,
+        0.8062,
+        0.82267,
+        0.839468,
+        0.8566,
+        0.8740816,
+        0.89192,
+        0.910122,
+        0.928696,
+        0.9476494,
+        0.9669891,
+        0.986724,
+        1.006861,
+        1.027401
+      ]
+    },
+    {
+      "expiry": "2011-03-18",
+      "delivery": "2011-03-18",
+      "pointsDetails": {
+        "requestType": "logMoneyness",
+        "inverseCurrency": false
+      },
+      "points": [
+        -0.0789653,
+        -0.0701913,
+        -0.061417,
+        -0.052643,
+        -0.0438696,
+        -0.0350957,
+        -0.0263218,
+        -0.0175478,
+        -0.008774,
+        0,
+        0.0087734,
+        0.0175478,
+        0.02632177,
+        0.0350957,
+        0.0438696,
+        0.0526435,
+        0.061417,
+        0.0701914,
+        0.07897
+      ]
+    },
+    {
+      "expiry": "2011-03-18",
+      "delivery": "2011-03-18",
+      "pointsDetails": {
+        "requestType": "strike",
+        "sliceType": "logMoneyness",
+        "inverseCurrency": false
+      },
+      "points": [
+        0.7142,
+        0.7287,
+        0.74363,
+        0.75881,
+        0.774298,
+        0.7901,
+        0.8062,
+        0.82267,
+        0.839468,
+        0.8566,
+        0.8740816,
+        0.89192,
+        0.910122,
+        0.928696,
+        0.9476494,
+        0.9669891,
+        0.986724,
+        1.006861,
+        1.027401
+      ]
+    },
+    {
+      "expiry": "2011-03-18",
+      "delivery": "2011-03-18",
+      "pointsDetails": {
+        "requestType": "logMoneyness",
+        "sliceType": "strike",
+        "inverseCurrency": false
+      },
+      "points": [
+        -0.0789653,
+        -0.0701913,
+        -0.061417,
+        -0.052643,
+        -0.0438696,
+        -0.0350957,
+        -0.0263218,
+        -0.0175478,
+        -0.008774,
+        0,
+        0.0087734,
+        0.0175478,
+        0.02632177,
+        0.0350957,
+        0.0438696,
+        0.0526435,
+        0.061417,
+        0.0701914,
+        0.07897
+      ]
+    },
+    {
+      "expiry": "2011-03-18",
+      "delivery": "2011-03-18",
+      "pointsDetails": {
+        "requestType": "strike",
+        "inverseCurrency": true
+      },
+      "points": [
+        1.40016802016242,
+        1.37230684781117,
+        1.34475478396514,
+        1.3178529539674,
+        1.29149242281396,
+        1.26566257435768,
+        1.24038700074423,
+        1.21555423195206,
+        1.191230636546,
+        1.16740602381508,
+        1.14405794607735,
+        1.1211767871558,
+        1.09875379344747,
+        1.07677862292935,
+        1.05524258233055,
+        1.03413782016778,
+        1.01345462358268,
+        0.993185752551742,
+        0.97332979
+      ]
+    },
+    {
+      "expiry": "2011-03-18",
+      "delivery": "2011-03-18",
+      "pointsDetails": {
+        "requestType": "logMoneyness",
+        "inverseCurrency": true
+      },
+      "points": [
+        -0.0789653,
+        -0.0701913,
+        -0.061417,
+        -0.052643,
+        -0.0438696,
+        -0.0350957,
+        -0.0263218,
+        -0.0175478,
+        -0.008774,
+        0,
+        0.0087734,
+        0.0175478,
+        0.02632177,
+        0.0350957,
+        0.0438696,
+        0.0526435,
+        0.061417,
+        0.0701914,
+        0.07897
+      ]
+    },
+    {
+      "expiry": "2011-03-18",
+      "delivery": "2011-03-18",
+      "pointsDetails": {
+        "requestType": "strike",
+        "sliceType": "logMoneyness",
+        "inverseCurrency": true
+      },
+      "points": [
+        1.40016802016242,
+        1.37230684781117,
+        1.34475478396514,
+        1.3178529539674,
+        1.29149242281396,
+        1.26566257435768,
+        1.24038700074423,
+        1.21555423195206,
+        1.191230636546,
+        1.16740602381508,
+        1.14405794607735,
+        1.1211767871558,
+        1.09875379344747,
+        1.07677862292935,
+        1.05524258233055,
+        1.03413782016778,
+        1.01345462358268,
+        0.993185752551742,
+        0.97332979
+      ]
+    },
+    {
+      "expiry": "2011-03-18",
+      "delivery": "2011-03-18",
+      "pointsDetails": {
+        "requestType": "logMoneyness",
+        "sliceType": "strike",
+        "inverseCurrency": true
+      },
+      "points": [
+        -0.0789653,
+        -0.0701913,
+        -0.061417,
+        -0.052643,
+        -0.0438696,
+        -0.0350957,
+        -0.0263218,
+        -0.0175478,
+        -0.008774,
+        0,
+        0.0087734,
+        0.0175478,
+        0.02632177,
+        0.0350957,
+        0.0438696,
+        0.0526435,
+        0.061417,
+        0.0701914,
+        0.07897
+      ]
+    },
+    {
+      "expiry": "2011-04-18",
+      "delivery": "2011-04-18",
+      "pointsDetails": {
+        "requestType": "deltaCall",
+        "deltaConvention": "spot",
+        "inverseCurrency": true,
+        "premiumAdjusted": false
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-04-18",
+      "delivery": "2011-04-18",
+      "pointsDetails": {
+        "requestType": "deltaCall",
+        "deltaConvention": "spot",
+        "inverseCurrency": true,
+        "premiumAdjusted": true
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.82,
+        0.83,
+        0.86
+      ]
+    },
+    {
+      "expiry": "2011-04-18",
+      "delivery": "2011-04-18",
+      "pointsDetails": {
+        "requestType": "deltaCall",
+        "deltaConvention": "forward",
+        "inverseCurrency": true,
+        "premiumAdjusted": false
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.92
+      ]
+    },
+    {
+      "expiry": "2011-04-18",
+      "delivery": "2011-04-18",
+      "pointsDetails": {
+        "requestType": "deltaCall",
+        "deltaConvention": "forward",
+        "inverseCurrency": true,
+        "premiumAdjusted": true
+      },
+      "points": [
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.82,
+        0.83,
+        0.86
+      ]
+    }
+  ]
+}
