@@ -1,0 +1,12 @@
+{
+  "associatedScript" : "FxHestonCalibration",
+  "marketDataSetName" : "MD-FX-LV-EURUSD.json",
+  "significantFigures" : 8,
+  "documents" : {
+    "calibration/heston/HestonCalibEURUSD.json" : {
+      "expectedResults" : {
+        "2017-09-29" : [ [ 0.005814104900142011, -0.08191713123021183, 0.16762854313050665, 0.010030316519776532, 1.0325563608890724 ] ]
+      }
+    }
+  }
+}

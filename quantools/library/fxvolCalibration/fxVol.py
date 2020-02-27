@@ -160,7 +160,7 @@ def constructFXVolSurface(data):
             getExpirySmile(forCur, domCur, nbStrikesByExpiry, smileLine, fxVolInfo, pow(10,-6),
                         underlyingSpotValue, expirySmileCurve,isSmileBroker,data["marketData"])
             fxCalibrationResultsDisplay(smileCounter, fxVolInfo, expirySmileCurve, surface)
-            ++smileCounter
+            smileCounter = smileCounter + 1
         surfaces.append(surface)
     return surfaces
 
