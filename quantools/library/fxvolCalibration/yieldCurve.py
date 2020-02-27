@@ -27,8 +27,18 @@ def interpolateDFOnCurve(values, ycDefFor, interpDate, refDate):
 	matBefore = maturities[indexBefore]
 	if (matBefore == interpDate):
 		return values[indexBefore]
+	if interpolationIndex ==0:
+		interpolationVariable, interpolationMethod = ycDefFor["extrapolationBeforeFirstPoint"]["variable"], ycDefFor["extrapolationBeforeFirstPoint"][
+			"method"]
+	if interpolationIndex ==2:
+		interpolationVariable, interpolationMethod = ycDefFor["extrapolationAfterLastPoint"]["variable"], \
+													 ycDefFor["extrapolationAfterLastPoint"][
+														 "method"]
+	else:
+		interpolationVariable, interpolationMethod = ycDefFor["interpolation"]["variable"], ycDefFor["interpolation"][
+			"method"]
 
-	interpolationVariable, interpolationMethod = ycDefFor["interpolation"]["variable"], ycDefFor["interpolation"]["method"]
+
 	zeroCouponBasis = ycDefFor["zeroCouponBasis"]
 	if (interpolationVariable == "FORWARD_RATE"):
 		pass
@@ -42,8 +52,9 @@ def interpolateDFOnCurve(values, ycDefFor, interpDate, refDate):
 	secDerivFirstPt = ycDefFor["secDerivFirstPt"] if "secDerivFirstPt" in ycDefFor else 0
 	secDerivLastPt = ycDefFor["secDerivFirstPt"] if "secDerivLastPt" in ycDefFor else 0
 	secondDerivatives = ycDefFor["SECOND_DERIVATIVE"] if "SECOND_DERIVATIVE" in ycDefFor else []
-	DFtable = pd.DataFrame(data=[maturities,values],index=["maturities","DF"])
-	values = DFtable.apply(lambda x : ZCFormula(x["DF"],refDate, x["maturities"], zeroCouponBasis, zeroCouponFormula),axis=0)
+	if interpolationVariable == "ZERO_COUPON_RATE":
+		DFtable = pd.DataFrame(data=[maturities,values],index=["maturities","DF"])
+		values = DFtable.apply(lambda x : ZCFormula(x["DF"],refDate, x["maturities"], zeroCouponBasis, zeroCouponFormula),axis=0)
 	compoundFrequency = ycDefFor["compoundFrequency"] if "compoundFrequency" in ycDefFor else 1
 	dfInterpolParams = DfInterpolParams(refDate, zeroCouponBasis, zeroCouponFormula, compoundFrequency,
                        interpolationVariable, interpolationMethod, secDerivFirstPt, secDerivLastPt,
