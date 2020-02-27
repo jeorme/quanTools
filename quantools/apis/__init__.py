@@ -5,6 +5,7 @@ from .pricing import api as pricing
 from .calibration import api as calibration
 from .interpolation import api as interpolation
 from .analyticsTools import api as analytics
+from .mock import api as mock
 
 api = Api(
     title='Quantitative tools',
@@ -18,4 +19,5 @@ api.add_namespace(pricing)
 api.add_namespace(calibration)
 api.add_namespace(interpolation)
 api.add_namespace(analytics)
+api.add_namespace(mock)
 
