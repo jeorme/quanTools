@@ -3,6 +3,7 @@ from flask_restplus import Namespace, Resource, fields
 from quantools.model.calibmodel.calibrationModel import mdDef, mdValues, outputFXVol
 
 from quantools.model.heston.hestonModel import inputs_heston, input_md, hestonOutput
+from quantools.model.pricing.lsvModel import reponse, scenarioContext, perimeter, taskContext
 
 api = Namespace('mock', 'input / output of the various service')
 
@@ -40,3 +41,25 @@ class fxVol(Resource):
 
         # define model
         return jsonify(outputFXVol)
+
+
+@api.route('/pricing/lsv')
+class Lsv(Resource):
+    @api.response(200,"Success")
+    @api.expect(api.model("lsv pricing", {"marketDataProviderId": fields.String(default="PE_STORE_MDP"),
+  "marketDataSetId": fields.String(default="$id/DEFAULT"),"pricingConfigId" : fields.String(default="$id/DEFAULT-FXO"),
+    "pricingMethod": fields.String(default="PRACTICAL"),
+    "resultHandlerId": fields.String(default="Collector"),
+                                          "pricingDates": fields.List(fields.String(default = "2016-07-05")),
+                                          "scenarioContexts" : fields.Raw(example=scenarioContext,type="json"),
+                                          "perimeter" : fields.Raw(example=perimeter,type="json"),
+                                          "taskContext" : fields.Raw(example=taskContext,type="json")
+    }))
+    def post(self):
+        """
+        pricing lsv :mock
+        :return: pricing result
+        """
+
+        # define model
+        return jsonify(reponse)

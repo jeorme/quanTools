@@ -1,0 +1,63 @@
+{
+  "fxVolatilities": [
+    {
+      "name": "EURUSD_VOL",
+      "marketSet": "DEFAULT",
+      "currencyPair": "EUR/USD",
+      "domesticCurve": "USDOIS",
+      "foreignCurve": "EUROIS",
+      "volatilityBasis": "ACT/360",
+      "premiumAdjusted": false,
+      "termStructureInterpolation": {
+        "interpolationMethod": "linear",
+        "extrapolationMethodBefore": "flat",
+        "extrapolationMethodAfter": "flat",
+        "variable": "totalVariance"
+      },
+      "smileInterpolation": {
+        "interpolationMethod": "cubicSpline",
+        "extrapolationMethod": "flat",
+        "variable": "volatility"
+      },
+      "smileAxis": "deltaPut"
+    }
+  ],
+  "yieldCurves": [
+    {
+      "name": "EUROIS",
+      "marketSet": "DEFAULT",
+      "currency": "EUR",
+      "switchDates": [0,12],
+      "interpolationVariables": [
+        "zeroCouponRate",
+        "zeroCouponRate",
+        "zeroCouponRate"
+      ],
+      "interpolationMethods": [
+        "flat",
+        "linear",
+        "flat"
+      ],
+      "zeroCouponFormula": "exponential",
+      "zeroCouponBasis": "ACT/365.FIXED"
+    },
+    {
+      "name": "USDOIS",
+      "marketSet": "DEFAULT",
+      "currency": "EUR",
+      "switchDates": [0,12],
+      "interpolationVariables": [
+        "zeroCouponRate",
+        "zeroCouponRate",
+        "zeroCouponRate"
+      ],
+      "interpolationMethods": [
+        "flat",
+        "linear",
+        "flat"
+      ],
+      "zeroCouponFormula": "exponential",
+      "zeroCouponBasis": "ACT/365.FIXED"
+    }
+  ]
+}
