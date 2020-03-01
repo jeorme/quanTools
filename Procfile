@@ -1,1 +1,1 @@
-web: python quantools/app.py
+web: python app.py
