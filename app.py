@@ -5,5 +5,6 @@ app = Flask(__name__)
 api.init_app(app)
 if __name__=="__main__":
     import os
-    port = int(os.getenv('PORT', 8080))
-    app.run(host="0.0.0.0",port=port,debug=True)
+    port =os.getenv('PORT')
+    portID = 8080 if port is None else int(port)
+    app.run(host='0.0.0.0',port=port,debug=True)
