@@ -6,5 +6,7 @@ api.init_app(app)
 if __name__=="__main__":
     import os
     port =os.getenv('PORT')
-    portID = 8080 if port is None else int(port)
+    print(port)
+    portID = 5000 if port is None else int(port)
+    print(portID)
     app.run(host='0.0.0.0',port=port,debug=True)
