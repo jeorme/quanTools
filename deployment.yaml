@@ -1,0 +1,20 @@
+ apiVersion: extensions/v1beta1
+ kind: Deployment
+ metadata:
+   name: pricev1-deployement
+ spec:
+   replicas: 1
+   selector:
+     matchLabels:
+       app: pricev1
+   template:
+     metadata:
+       labels:
+         app: pricev1
+     spec:
+       containers:
+       - name: pricev1
+         image: us.icr.io/pricev1/pricev1
+         imagePullPolicy: Always
+         ports:
+         - containerPort: 5000
