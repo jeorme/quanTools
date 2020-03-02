@@ -9,4 +9,4 @@ if __name__=="__main__":
     print(port)
     portID = 5000 if port is None else int(port)
     print(portID)
-    app.run(host='0.0.0.0',port=port,debug=True)
+    app.run(host='0.0.0.0',port=portID,debug=True)
