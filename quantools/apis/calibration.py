@@ -26,3 +26,21 @@ class FxVol(Resource):
         # define model
         output =  outputFxVolCalibrated(surface, content)
         return output
+
+@api.route('/fxvol')
+class SABR(Resource):
+    @api.response(200,"Success")
+    @api.expect(api.model("SABR calibration",{"asOfDate":fields.String(default="2011-02-02"),
+    "marketDataDefinitions":fields.Raw(example=mdDef,type="json"),
+          "marketData"   :   fields.Raw(example=mdValues,type="json")
+                                     }))
+    def post(self):
+        """
+        interpolation : smile axis
+        :return: the interpolated value
+        """
+        content = request.get_json()
+        surface = constructFXVolSurface(content)
+        # define model
+        output =  outputFxVolCalibrated(surface, content)
+        return output
