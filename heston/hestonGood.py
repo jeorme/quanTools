@@ -701,3 +701,24 @@ def computeJacobian(func, x0, context, dimension, numberOfParameters, deltaX):
             jacobian[i][j] = partDerj[i] * factor
 
     return jacobian
+
+def applyShift(vector, deltaX, index, size):
+    shiftedVect = np.zeros((1,size))
+    for i in range(size):
+        shiftedVect[i] = vector[i]
+    shiftedVect[index] = vector[index] + deltaX
+    return shiftedVect
+
+def diffVectors(vector1, vector2, size):
+    diff = np.zeros((1,size))
+    for i in range(size):
+        diff[i] = vector1[i] - vector2[i]
+    return diff
+
+def transpose(mtx, width, height):
+    transposeMtx = np.zeros((width, height))
+    for i in range(width):
+        for j in range(height):
+            transposeMtx[i][j] = mtx[j][i]
+
+    return transposeMtx
