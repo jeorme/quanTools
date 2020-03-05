@@ -14,7 +14,7 @@
      spec:
        containers:
        - name: pricev1
-         image: us.icr.io/pricev1/pricev1
+         image: uk.icr.io/pricev1/pricev1:1.0
          imagePullPolicy: Always
          ports:
          - containerPort: 5000

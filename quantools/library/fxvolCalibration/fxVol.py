@@ -28,7 +28,7 @@ class FxExpiryfxVolInfo:
 ##utilisties
 
 def getDeltaConventionAdjustment(smileConvention, df):
-    if smileConvention == "SPOT":
+    if smileConvention == "SPOT" or smileConvention == "spot":
         return df
     return 1
 

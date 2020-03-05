@@ -1,4 +1,5 @@
 {
+  "calibrationDate" : "2016-07-05",
   "inputs": [
     {
       "volatilityName": "EURGBP_Volatility",
@@ -3044,7 +3045,8 @@
             ]
           }
         }
-      },
+      }
+    },
       "yieldCurves": {
          "eurDiscount": {
         "values": {
@@ -3137,19 +3139,20 @@
         {
           "currency1": "EUR",
           "currency2": "GBP",
-          "value": 0.85
+          "value": 0.85,
+           "spotDate": "2016-07-07"
         },
         {
           "currency1": "GBP",
           "currency2": "USD",
-          "value": 1.3021
+          "value": 1.3021,
+          "spotDate": "2016-07-07"
         },
         {
           "currency1": "EUR",
           "currency2": "USD",
-          "value": 1.1075
+          "spotDate": "2016-07-07"
         }
       ]
-    }
   }
 }
