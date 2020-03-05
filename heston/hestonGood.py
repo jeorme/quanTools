@@ -19,61 +19,59 @@ from quantools.analyticsTools.analyticsTools import yearFraction
 
 
 def calibrateHestonModel(surface):
-	calcDate = datetime.strptime(surface["calibrationDate"],"%Y-%m-%d")
-	for fxVolDef in surface["marketDataDefinitions"]["fxVolatilities"]:
-		volat_Id = fxVolDef["id"]
-		surfaceTenors = list(surface["marketData"]["fxVolatilities"][volat_Id]["values"].keys())[0]
-		smileLength = len(surface["marketData"]["fxVolatilities"]["EURGBP_Volatility"]["values"][surfaceTenors]["smileValues"])
-		volatilityBasis = fxVolDef["basis"]
-		nbExpiries = len(surfaceTenors)
-		size = nbExpiries * smileLength
-		smileAxisType = surface["marketData"]["fxVolatilities"][volat_Id]["smileAxis"]
-		callOrPut = -1 if smileAxisType=="deltaPut" else 1
-		isPremiumAdjusted = fxVolDef["premiumAdjusted"]
-		mktStrikes = np.zeros((size,1))
-		mktVols = np.zeros((size,1))
-		forwards = np.zeros((nbExpiries,1))
-		expiries = np.zeros((nbExpiries,1))
-		dfs = np.zeros((nbExpiries,1))
-		weights = np.ones((size,1))* math.sqrt(1.0 / size)
-		ycValuesDom, ycDefDom = surface["marketData"]["yieldCurves"][fxVolDef["domesticDiscountId"]]["values"],getDFYC(surface["marketDataDefinitions"]["yieldCurves"],fxVolDef["domesticDiscountId"])
-		ycValuesFor, ycDefFor = surface["marketData"]["yieldCurves"][fxVolDef["foreignDiscountId"]]["values"],getDFYC(surface["marketDataDefinitions"]["yieldCurves"],fxVolDef["foreignDiscountId"])
-		spotRate , spotDate = getFx(surface["marketData"]["fxRates"],fxVolDef["foreignCurrencyId"],fxVolDef["domesticCurrencyId"])
-		index = -smileLength
-		for expiry,value in surface["marketData"]["fxVolatilities"][volat_Id]["values"].items():
-			yfExpiry = yearFraction(calcDate, datetime.strptime(expiry,"%Y-%m-%d"), volatilityBasis)
-			expiries.append( yfExpiry)
-			deliveryAsDays =  datetime.strptime(value["delivery"],"%Y-%m-%d")
-			smileAxis = value["smileValues"]
-			volValues = value["volatilityValues"]
-			dfFor = discountFactorFromDays( ycValuesFor, ycDefFor, calcDate, spotDate, deliveryAsDays)
-			dfDom = discountFactorFromDays(ycValuesDom, ycDefDom,calcDate, spotDate, deliveryAsDays)
-			dfDomPv = computeDiscountFactor( ycValuesDom, ycDefDom, calcDate,deliveryAsDays)
-			forward = spotRate * dfFor / dfDom
-			dfs.append(dfDomPv)
-			forwards.append(forward)
-			deltaConvFactor = getDeltaConventionAdjustment(value["deltaConvention"], dfFor)
-			sqrtYf = math.sqrt(yfExpiry)
+    calcDate = datetime.strptime(surface["calibrationDate"],"%Y-%m-%d")
+    for fxVolDef in surface["marketDataDefinitions"]["fxVolatilities"]:
+        volat_Id = fxVolDef["id"]
+        surfaceTenors = list(surface["marketData"]["fxVolatilities"][volat_Id]["values"].keys())[0]
+        smileLength = len(surface["marketData"]["fxVolatilities"]["EURGBP_Volatility"]["values"][surfaceTenors]["smileValues"])
+        volatilityBasis = fxVolDef["basis"]
+        nbExpiries = len(surface["marketData"]["fxVolatilities"][volat_Id]["values"].keys())
+        size = nbExpiries * smileLength
+        smileAxisType = surface["marketData"]["fxVolatilities"][volat_Id]["smileAxis"]
+        callOrPut = -1 if smileAxisType=="deltaPut" else 1
+        isPremiumAdjusted = fxVolDef["premiumAdjusted"]
+        forwards , expiries, dfs,  = [], [], []
+        mktStrikes, mktVols = np.zeros((size,1)), np.zeros((size,1))
+        weights = np.ones((size,1))* math.sqrt(1.0 / size)
+        ycValuesDom, ycDefDom = list(surface["marketData"]["yieldCurves"][fxVolDef["domesticDiscountId"]]["values"].values()),getDFYC(surface["marketDataDefinitions"]["yieldCurves"],fxVolDef["domesticDiscountId"])
+        ycValuesFor, ycDefFor = list(surface["marketData"]["yieldCurves"][fxVolDef["foreignDiscountId"]]["values"].values()),getDFYC(surface["marketDataDefinitions"]["yieldCurves"],fxVolDef["foreignDiscountId"])
+        spotDate, spotRate  = getFx(surface["marketData"]["fxRates"],fxVolDef["foreignCurrencyId"],fxVolDef["domesticCurrencyId"])
+        index = 0
+        for expiry,value in surface["marketData"]["fxVolatilities"][volat_Id]["values"].items():
+            yfExpiry = yearFraction(calcDate, datetime.strptime(expiry,"%Y-%m-%d"), volatilityBasis)
+            expiries = np.append(expiries , yfExpiry)
+            deliveryAsDays =  datetime.strptime(value["delivery"],"%Y-%m-%d")
+            smileAxis = value["smileValues"]
+            volValues = value["volatilityValues"]
+            dfFor = discountFactorFromDays( ycValuesFor, ycDefFor, calcDate, spotDate, deliveryAsDays)
+            dfDom = discountFactorFromDays(ycValuesDom, ycDefDom,calcDate, spotDate, deliveryAsDays)
+            dfDomPv = computeDiscountFactor( ycValuesDom, ycDefDom, calcDate,deliveryAsDays)
+            forward = spotRate * dfFor / dfDom
+            dfs = np.append(dfs,dfDomPv)
+            forwards = np.append(forwards,forward)
+            deltaConvFactor = getDeltaConventionAdjustment(value["deltaConvention"], dfFor)
+            sqrtYf = math.sqrt(yfExpiry)
 
-			for j in range(smileLength):
-				vol = volValues[j]
-				strike = getStrikeFromSmileAxis(smileAxisType, forward, smileAxis[j], vol * sqrtYf, deltaConvFactor, isPremiumAdjusted, callOrPut)
-				index = index + smileLength + j
-				mktStrikes[index] = strike
-				mktVols[index] = vol
-				weights[index] = 1 / math.sqrt(getNormedBlackVega(vol * sqrtYf, strike / forward, sqrtYf) * dfDomPv * forward)
-
-		#initialVolATM is the first available by default.
-		initialVolATM = mktVols[math.floor(smileLength / 2)]
-		v0 = initialVolATM * initialVolATM
+            for j in range(smileLength):
+                vol = volValues[j]
+                strike = getStrikeFromSmileAxis(smileAxisType, forward, smileAxis[j], vol * sqrtYf, deltaConvFactor, isPremiumAdjusted, callOrPut)
+                mktStrikes[index] = strike
+                mktVols[index] = vol
+                weights[index] = 1 / math.sqrt(getNormedBlackVega(vol * sqrtYf, strike / forward, sqrtYf) * dfDomPv * forward)
+                index = index + 1
 
 
-		calibHelper = CalibrationHelper(expiries=expiries, forwards=forwards, dfs=dfs, strikes=mktStrikes, mktVols=mktVols, weights=weights, v0=v0)
+        #initialVolATM is the first available by default.
+        initialVolATM = mktVols[math.floor(smileLength / 2)]
+        v0 = initialVolATM * initialVolATM
 
-		initPoints = CHDEminimisationBestSolution(15, 35, 0.6, 0.75, 4, np.array([ 1, 1, 1, 10]),  np.array([-1,1.0E-6, 0, 0]),
-												  costFunction, calibHelper)
-		return getResultsWithV0(LevenbergMarquardt(costFunctionLV, initPoints, calibHelper, 4, size, 4, np.array([ 1, 1, 1, 10])),
-			v0, 4, calibHelper.kappa)
+
+        calibHelper = CalibrationHelper(expiries=expiries, forwards=forwards, dfs=dfs, strikes=mktStrikes, mktVols=mktVols, weights=weights, v0=v0)
+
+        initPoints = CHDEminimisationBestSolution(15, 35, 0.6, 0.75, 4, np.array([ 1, 1, 1, 10]),  np.array([-1,1.0E-6, 0, 0]),
+                                          costFunction, calibHelper)
+        return getResultsWithV0(LevenbergMarquardt(costFunctionLV, initPoints, calibHelper, 4, size, 4, np.array([ 1, 1, 1, 10])),
+        v0, 4, calibHelper.kappa)
 
 def getStrikeFromSmileAxis(smileAxisType, forward, quote, volStdDev, deltaConventionFactor, premiumAdjusted, callOrPut):
 	if (smileAxisType == "deltaCall" or smileAxisType == "deltaPut"):
@@ -91,7 +89,7 @@ def getDFYC(ycDefs,id):
 def getFx(fxRates, ccy1, ccy2):
 	for rate in fxRates:
 		if rate["currency2"] == ccy2 and rate["currency1"] == ccy1:
-			return rate["spotDate"],rate["value"]
+			return datetime.strptime(rate["spotDate"],"%Y-%m-%d"),rate["value"]
 	return None
 
 
@@ -121,7 +119,7 @@ def costFunction(hestonParams, calibHelper):
 	mktVols = calibHelper.mktVols
 	weights = calibHelper.weights
 	nbExpiries = len(expiries)
-	nbStrikesPerExp = len(strikes) / nbExpiries
+	nbStrikesPerExp =int(len(strikes) / nbExpiries)
 	v0 = calibHelper.v0
 	kappa = calibHelper.kappa
 
@@ -169,7 +167,7 @@ def bgmHestonApprox(time, strike, forward, spot, dfDom, kappa, sigma, theta, rho
 	return  putPrice + dfDom * (forward - strike)
 
 def bgmCorrectionTerm(a1T, a2T, b2T, b0T, y, f, g, strike, dfDom, forward):
-	sqrt2Pi = math.sqrt(2 * np.pi())
+	sqrt2Pi = math.sqrt(2 * np.pi)
 	sqrtY = math.sqrt(y)
 	ySqrtY = 1 / (sqrtY * y)
 	y2 = y * y
