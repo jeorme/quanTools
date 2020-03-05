@@ -653,7 +653,7 @@ def LevenbergMarquardt(func, x0, context, numberOfParameters, dimension, lower, 
     jacobian = computeJacobian(func, x0, context, dimension, numberOfParameters, delta)
     jacobianTranspose = transpose(jacobian, numberOfParameters, dimension)
     B = multipyMtxByVector(jacobianTranspose, f, dimension, numberOfParameters)
-    normGrad = computeNormInf(B)
+    normGrad = np.linalg.norm(B,ord = "inf")
 
     h = np.zeros((1,numberOfParameters))
     F_try = F
@@ -678,7 +678,7 @@ def LevenbergMarquardt(func, x0, context, numberOfParameters, dimension, lower, 
             jacobian = computeJacobian(func, x0, context, dimension, numberOfParameters, delta)
             jacobianTranspose = transpose(jacobian, numberOfParameters, dimension)
             B = multipyMtxByVector(jacobianTranspose, f_try, dimension, numberOfParameters)
-            normGrad = computeNormInf(B)
+            normGrad = np.linalg.norm(B,"inf")
             F = F_try
 
         else: # Otherwise increases the value of the damping factor
@@ -722,3 +722,82 @@ def transpose(mtx, width, height):
             transposeMtx[i][j] = mtx[j][i]
 
     return transposeMtx
+
+def multipyMtxByVector(mtx, vector, widthMtx, heightMtx):
+    product = np.zeros((1,heightMtx))
+    for i in range(heightMtx):
+        for j in range(widthMtx):
+            product[i] += mtx[i][j]*vector[j]
+
+    return product
+
+def solverLU(A, B, X):
+	for i in range(len(X)):
+		X[i] = B[i]
+	return solverLURangeInPlace(len(X),A, X)
+
+
+def solverLURangeInPlace(N, A, B):
+	if (A.shape[0] < N ):
+		return None
+
+	minNotNullValue = 1e-60
+	for j in range(N):
+		for i in range(j):
+			sum = A[i][j]
+			for k in range(i):
+				sum -= A[i][k] * A[k][j]
+			A[i][j] = sum
+
+		pivot = 0.0
+		indice = j
+		for i in range(N):
+			sum = A[i][j]
+			for k in range(j):
+				sum -= A[i][k] * A[k][j]
+			A[i][j] = sum
+			abs = abs(A[i][j])
+			if(abs > pivot):
+				pivot =  abs
+				indice = i
+		if(indice != j):
+			pivot = B[indice]
+			B[indice] = B[j]
+			B[j] = pivot
+			for k in range(N):
+				pivot = A[indice][k]
+				A[indice][k]=A[j][k]
+				A[j][k] = pivot
+
+		fabsAjj = abs(A[j][j])
+		if (fabsAjj < minNotNullValue):
+			return None
+		for i in range(j+1,N):
+			A[i][j] /= A[j][j]
+
+	for i in range(N):
+		sum = B[i]
+		for k in range(i-1,-1,-1):
+			sum -= A[i][k] * B[k]
+		B[i] = sum
+
+	for i in range(N - 1,-1,-1):
+		sum =B[i]
+		for k in range(i+1,N):
+			sum -= A[i][k] * B[k]
+		if(abs(A[i][i]) < minNotNullValue):
+			return None
+		B[i] = sum / A[i][i]
+
+	return None
+
+
+def applyConstraints(xtry, lower, upper):
+    for j in range(len(xtry)):
+        xtry[j] = min(max(lower[j],xtry[j]),upper[j])
+
+
+
+def copyArray(inVector, outVector, size):
+    for i in range(size):
+        inVector[i] = outVector[i]
