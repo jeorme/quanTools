@@ -11,6 +11,8 @@ api = Api(
     title='Quantitative tools',
     version='1.0',
     description='quantitative tools for pricing / calibrating / time series analysis',
+    contact= "jerome.petit@outlook.com",
+    doc = "/api"
     # All API metadatas
 )
 
