@@ -1,7 +1,6 @@
 from calendar import isleap
 from datetime import datetime
 
-
 def yearFraction(startDate,endDate,basis):
     """
     compute the yearfraction

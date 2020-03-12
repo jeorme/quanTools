@@ -8,7 +8,7 @@ from quantools.library.utilities.interpolation import leeExtrapolation, getInter
 from quantools.library.utilities.solver import newtonSolver1D, findRoot
 from quantools.library.utilities.utilitiesAccessor import getIndexBefore, pointFloorIndex
 from quantools.library.fxvolCalibration.yieldCurve import discountFactorFromDays
-
+import line_profiler
 
 class FxExpiryfxVolInfo:
     def __init__(self,forwardStrike, premiumAdjustmentIndicator,
