@@ -86,8 +86,7 @@ def getPremiumAdjustedRatioFromIndicator(forward, premiumAdjustmentIndicator, st
 def getFxAtmDeltaAndStrikeFromVol(fxVolInfo, realizedStdDev, atmConvention, fxSpot, fxResults, currentLine):
     strike = getAtmStrike(atmConvention, fxVolInfo.forwardStrike, fxVolInfo.premiumAdjustmentIndicator, realizedStdDev, fxSpot)
     fxResults[1][int(currentLine)] = strike
-    fxResults[3][int(currentLine)] = computeDeltaFromStrike(strike, realizedStdDev, fxVolInfo.forwardStrike,
-            fxVolInfo.deltaConventionAdjustment, 1.0,  fxVolInfo.premiumAdjustmentIndicator)
+    fxResults[3][int(currentLine)] = computeDeltaFromStrike(strike, realizedStdDev, fxVolInfo.forwardStrike, fxVolInfo.deltaConventionAdjustment, 1.0,  fxVolInfo.premiumAdjustmentIndicator)
 
 def getAtmStrike(atmStrikeQuotation, forwardStrike, premiumAdjustmentIndicator, realizedStdDev, underlyingSpotValue):
     if atmStrikeQuotation == "SPOT":
@@ -97,21 +96,26 @@ def getAtmStrike(atmStrikeQuotation, forwardStrike, premiumAdjustmentIndicator, 
     if atmStrikeQuotation=="DELTA_NEUTRAL_STRADDLE":
         return getAtmStrikeDeltaNeutralStraddle(forwardStrike, premiumAdjustmentIndicator, realizedStdDev)
 
+    return None
+
 def getAtmStrikeDeltaNeutralStraddle(forwardStrike, premiumAdjustmentIndicator, realizedStdDev):
     return forwardStrike * math.exp((-2 * premiumAdjustmentIndicator + 1) * 0.5 * realizedStdDev * realizedStdDev)
 
 def computeDeltaFromStrike(strike, bsStdDev, forward, deltaConventionFactor, callPutIndicator, premiumAdjustmentIndicator):
-    return callPutIndicator * deltaConventionFactor * getPremiumAdjustedRatioFromIndicator(forward, premiumAdjustmentIndicator, strike) * norm.cdf(callPutIndicator * (getBSCallPutPricePlusDCoefficient(forward, strike, bsStdDev) - premiumAdjustmentIndicator * bsStdDev))
+    temp = callPutIndicator * deltaConventionFactor
+    temp2 =  getPremiumAdjustedRatioFromIndicator(forward, premiumAdjustmentIndicator, strike)
+    temp4 = getBSCallPutPricePlusDCoefficient(forward, strike, bsStdDev)
+    temp3 = norm.cdf(callPutIndicator * (temp4 - premiumAdjustmentIndicator * bsStdDev))
+    return  temp * temp2 * temp3
 
 def getBSCallPutPricePlusDCoefficient(forward, strike, bsStdDev):
-    if strike == 0: # when strike is near zero, N(d1) is equal to 1
-        return getPlusInfinityValue()
-    return (math.log(abs(forward/ strike)) + 0.5 * bsStdDev * bsStdDev) / bsStdDev
+    return  1e306 if strike <= 0 else (math.log(abs(forward/ strike)) + 0.5 * bsStdDev * bsStdDev) / bsStdDev
 
 def getPlusInfinityValue():
     return 1e306
 
 ## vol computation
+
 def getFxAtmPoint(fxVolInfo, atmConvention,  outputFxSmile, fxSpot, calibrationInstruments):
     realizedStdDev = fxVolInfo.atmVol * fxVolInfo.sqrtYfExpiryAsOf
     currentLine = calibrationInstruments[0][0]

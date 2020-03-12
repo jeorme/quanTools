@@ -232,13 +232,13 @@ def costFunctionLV(hestonParams, calibHelper, dimension) :
 	mktVols = calibHelper.mktVols
 	weights = calibHelper.weights
 	nbExpiries = len(expiries)
-	nbStrikesPerExp = len(strikes) / nbExpiries
+	nbStrikesPerExp = int(len(strikes) / nbExpiries)
 	weightsIntg = gaussLaguerreWeights()
 	abscissas = gaussLaguerreAbscissas()
 	v0 = calibHelper.v0
 	kappa = calibHelper.kappa
 
-	sum = np.zeros((1,dimension))
+	sum = np.zeros((dimension,1))
 	for i in range(nbExpiries): 
 		time = expiries[i]
 		df = dfs[i]
@@ -353,25 +353,25 @@ def cLog(z):
     return Complex(0.5 * math.log(z.re * z.re + z.im * z.im), cArg(z))
 
 class Complex:
-    def __init__(self):
-        self.re = 0
-        self.im = 0
+    def __init__(self,re,im):
+        self.re = re
+        self.im = im
 
 
 class HestonParams:
-    def __init__(self):
-        self.T = 0.0
-        self.sigmaBS = 0.0
-        self.kappa = 0.0
-        self.sigma = 0.0
-        self.theta = 0.0
-        self.rho = 0.0
-        self.v0 = 0.0
-        self.logMoneyness = 0.0
+    def __init__(self,T=0.0,sigmaBS=0.0,kappa=0.0,sigma=0.0,theta=0.0,rho=0.0,v0=0.0,logMoneyness=0.0):
+        self.T = T
+        self.sigmaBS = sigmaBS
+        self.kappa = kappa
+        self.sigma = sigma
+        self.theta = theta
+        self.rho = rho
+        self.v0 = v0
+        self.logMoneyness = logMoneyness
 
 
 def gaussLaguerreAbscissas():
-    abscissas  =  np.zeros((1,128))
+    abscissas  =  np.zeros((128,1))
     abscissas[0] = 484.61554398644364028
     abscissas[1] = 463.08003410944661482
     abscissas[2] = 445.74309697392811813
@@ -504,7 +504,7 @@ def gaussLaguerreAbscissas():
 
 
 def gaussLaguerreWeights():
-    weights = np.zeros((1,128))
+    weights = np.zeros((128,1))
     weights[0] = 25.258065262116357275
     weights[1] = 18.906551250536754338
     weights[2] = 16.041733742401532936
