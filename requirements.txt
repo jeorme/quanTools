@@ -16,4 +16,3 @@ scikit-learn
 flask_apispec
 pysabr
 dist/quantitativeTool-1.0.0.tar.gz
-

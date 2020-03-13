@@ -4,7 +4,7 @@ import pandas as pd
 from quantools.analyticsTools.analyticsTools import yearFraction
 from quantools.library.utilities.interpolation import getInterpolatedValue, cubicSplineInterpolation, linearInterpolation
 from quantools.library.utilities.utilitiesAccessor import pointFloorIndex, getIndexBefore
-
+import numpy as np
 
 def discountFactorFromDays( ycValuesFor, ycDefFor, refDate,startDate, endDate):
 	return computeDiscountFactor( ycValuesFor, ycDefFor, refDate, endDate) / computeDiscountFactor( ycValuesFor, ycDefFor, refDate, startDate)
@@ -18,7 +18,7 @@ def computeDiscountFactor( ycValuesFor, ycDefFor, refDate, discountDate):
 def getMaturity(ycDefFor):
 	return  [datetime.strptime(x,"%Y-%m-%d") for x in ycDefFor["maturities"] ]
 
-
+@profile
 def interpolateDFOnCurve(values, ycDefFor, interpDate, refDate):
 	switchDates = [0,len(ycDefFor["maturities"])-1]
 	maturities = getMaturity(ycDefFor)
@@ -53,8 +53,8 @@ def interpolateDFOnCurve(values, ycDefFor, interpDate, refDate):
 	secDerivLastPt = ycDefFor["secDerivFirstPt"] if "secDerivLastPt" in ycDefFor else 0
 	secondDerivatives = ycDefFor["SECOND_DERIVATIVE"] if "SECOND_DERIVATIVE" in ycDefFor else []
 	if interpolationVariable == "ZERO_COUPON_RATE":
-		DFtable = pd.DataFrame(data=[maturities,values],index=["maturities","DF"])
-		values = DFtable.apply(lambda x : ZCFormula(x["DF"],refDate, x["maturities"], zeroCouponBasis, zeroCouponFormula),axis=0)
+		ZC = np.vectorize(ZCFormula,excluded=['refDate','basis','compoundFormula'])
+		values = ZC(discountFactor=values,dfDate=maturities,refDate=refDate,basis=zeroCouponBasis,compoundFormula=zeroCouponFormula)
 	compoundFrequency = ycDefFor["compoundFrequency"] if "compoundFrequency" in ycDefFor else 1
 	dfInterpolParams = DfInterpolParams(refDate, zeroCouponBasis, zeroCouponFormula, compoundFrequency,
                        interpolationVariable, interpolationMethod, secDerivFirstPt, secDerivLastPt,

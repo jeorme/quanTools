@@ -1,6 +1,5 @@
 recursive-include quantools/apis *
 recursive-include quantools/analyticsTools *
-recursive-include quantools/interpolation *
 recursive-include quantools/library *
 recursive-include quantools/model *
 recursive-include quantools/pricing *

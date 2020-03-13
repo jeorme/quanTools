@@ -8,7 +8,7 @@ class calibOneExpiryOneVol(unittest.TestCase):
 
     def test_choice(self):
         """Test le calibration Broker Strangle"""
-        with open("calibration_fqp.json", "r") as file:
+        with open("../../calibration_fqp.json", "r") as file:
             data = json.load(file)
         surface = constructFXVolSurface(data)
         for fxvol in data["marketDataDefinitions"]["fxVolatilities"]:
