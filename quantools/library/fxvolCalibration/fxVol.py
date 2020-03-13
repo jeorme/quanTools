@@ -8,7 +8,6 @@ from quantools.library.utilities.interpolation import leeExtrapolation, getInter
 from quantools.library.utilities.solver import newtonSolver1D, findRoot
 from quantools.library.utilities.utilitiesAccessor import getIndexBefore, pointFloorIndex
 from quantools.library.fxvolCalibration.yieldCurve import discountFactorFromDays
-import line_profiler
 
 class FxExpiryfxVolInfo:
     def __init__(self,forwardStrike, premiumAdjustmentIndicator,
@@ -124,7 +123,7 @@ def getFxAtmPoint(fxVolInfo, atmConvention,  outputFxSmile, fxSpot, calibrationI
         calibrationInstruments[int(currentLine)][1] = 0
         calibrationInstruments[int(currentLine)][4] = outputFxSmile[3][int(currentLine)]
         calibrationInstruments[int(currentLine)][5] = fxVolInfo.atmVol #atm vol
-@profile
+#@profile
 def constructFXVolSurface(data):
     asOfDate = datetime.strptime(data["asOfDate"],"%Y-%m-%d")
     surfaces = []
