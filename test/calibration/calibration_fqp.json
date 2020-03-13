@@ -46,10 +46,6 @@
         "foreignCurrencyId": "EUR",
         "foreignDiscountId": "eurDiscount",
         "fxEvents": {},
-          "smileAxis": [
-          "DELTA_CALL",
-          "DELTA_PUT"
-        ],
         "premiumAdjusted": true,
         "smileExtrapolationMethod": "CUBIC_SPLINE",
         "smileInterpolationMethod": "CUBIC_SPLINE",
