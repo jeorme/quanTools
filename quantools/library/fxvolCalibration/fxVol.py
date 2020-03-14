@@ -8,6 +8,7 @@ from quantools.library.utilities.interpolation import leeExtrapolation, getInter
 from quantools.library.utilities.solver import newtonSolver1D, findRoot
 from quantools.library.utilities.utilitiesAccessor import getIndexBefore, pointFloorIndex
 from quantools.library.fxvolCalibration.yieldCurve import discountFactorFromDays
+from dateutil.parser import parse
 
 class FxExpiryfxVolInfo:
     def __init__(self,forwardStrike, premiumAdjustmentIndicator,
@@ -127,9 +128,9 @@ def getFxAtmPoint(fxVolInfo, atmConvention,  outputFxSmile, fxSpot, calibrationI
         calibrationInstruments[int(currentLine)][1] = 0
         calibrationInstruments[int(currentLine)][4] = outputFxSmile[3][int(currentLine)]
         calibrationInstruments[int(currentLine)][5] = fxVolInfo.atmVol #atm vol
-#@profile
+@profile
 def constructFXVolSurface(data):
-    asOfDate = datetime.strptime(data["asOfDate"],"%Y-%m-%d")
+    asOfDate = parse(data["asOfDate"])
     surfaces = []
     for fxVol in  data["marketDataDefinitions"]["fxVolatilities"]:
         expiryInput = fxVol["expiries"]
@@ -150,10 +151,10 @@ def constructFXVolSurface(data):
         premiumAdjustmentIndicator = fxVol["premiumAdjusted"] * 1.0
         isSmileBroker = fxVol["strategyConvention"] == "BROKER_STRANGLE"
         for smileLine in fxVol["expiries"]:
-            deliveryDate = datetime.strptime(smileLine["deliveryDate"],"%Y-%m-%d")
+            deliveryDate =parse(smileLine["deliveryDate"])
             dfFor = discountFactorFromDays( ycValuesFor, ycDefFor,asOfDate, spotDate, deliveryDate)
             dfDom = discountFactorFromDays( ycValuesDom, ycDefDom,asOfDate, spotDate, deliveryDate)
-            sqrtVolYearFraction = math.sqrt(yearFraction(asOfDate, datetime.strptime(smileLine["expiryDate"],"%Y-%m-%d"), volatilityBasis))
+            sqrtVolYearFraction = math.sqrt(yearFraction(asOfDate, parse(smileLine["expiryDate"]), volatilityBasis))
             forwardStrike = underlyingSpotValue * dfFor / dfDom
             fxVolInfo = FxExpiryfxVolInfo(forwardStrike, premiumAdjustmentIndicator,
                            getDeltaConventionAdjustment(smileLine["deltaConvention"], dfFor), sqrtVolYearFraction,
@@ -180,7 +181,7 @@ def getYcInput(ycId,values,definitions):
 def getFxInput(currencyPairId,fxRates):
     for fx in fxRates:
         if currencyPairId==fx["currencyPairId"]:
-            return datetime.strptime(fx["spotDate"],"%Y-%m-%d"),fx["quoteValue"]
+            return parse(fx["spotDate"]),fx["quoteValue"]
 
 def getExpirySmile(foreignCurrency, domesticCurrency, nbStrikesByExpiry, smileLine, fxVolInfo, fxVolTolerance,fxSpot, expirySmileCurve, isSmileB,marketData):
 

@@ -1,6 +1,7 @@
 import math
 from datetime import datetime
-import pandas as pd
+
+from dateutil.parser import parse
 from quantools.analyticsTools.analyticsTools import yearFraction
 from quantools.library.utilities.interpolation import getInterpolatedValue, cubicSplineInterpolation, linearInterpolation
 from quantools.library.utilities.utilitiesAccessor import pointFloorIndex, getIndexBefore
@@ -18,9 +19,12 @@ def computeDiscountFactor( ycValuesFor, ycDefFor, refDate, discountDate):
 def getMaturity(ycDefFor):
 	return  [datetime.strptime(x,"%Y-%m-%d") for x in ycDefFor["maturities"] ]
 
-#@profile
+
+@profile
 def interpolateDFOnCurve(values, ycDefFor, interpDate, refDate):
 	switchDates = [0,len(ycDefFor["maturities"])-1]
+	# getMaturity = np.vectorize(lambda x: parse(x))
+	# maturities = getMaturity(ycDefFor["maturities"])
 	maturities = getMaturity(ycDefFor)
 	interpolationIndex = interpolationMetaIndexFromCurveSwitchDates(interpDate, switchDates, maturities)
 	indexBefore = getIndexBefore(pointFloorIndex(maturities, interpDate), len(maturities))
