@@ -20,7 +20,7 @@ def getMaturity(ycDefFor):
 	return  [datetime.strptime(x,"%Y-%m-%d") for x in ycDefFor["maturities"] ]
 
 
-@profile
+#@profile
 def interpolateDFOnCurve(values, ycDefFor, interpDate, refDate):
 	switchDates = [0,len(ycDefFor["maturities"])-1]
 	# getMaturity = np.vectorize(lambda x: parse(x))

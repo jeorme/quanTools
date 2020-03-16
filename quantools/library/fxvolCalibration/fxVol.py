@@ -128,7 +128,7 @@ def getFxAtmPoint(fxVolInfo, atmConvention,  outputFxSmile, fxSpot, calibrationI
         calibrationInstruments[int(currentLine)][1] = 0
         calibrationInstruments[int(currentLine)][4] = outputFxSmile[3][int(currentLine)]
         calibrationInstruments[int(currentLine)][5] = fxVolInfo.atmVol #atm vol
-@profile
+#@profile
 def constructFXVolSurface(data):
     asOfDate = parse(data["asOfDate"])
     surfaces = []

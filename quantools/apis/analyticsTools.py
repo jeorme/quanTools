@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import multiprocessing
 from flask import request, jsonify
 from flask_restplus import Namespace, Resource, fields
 
@@ -71,3 +71,9 @@ class biNormalCDF(Resource):
         cdf = bivariateCND(x,y,rho)
         # define model
         return jsonify({"bi normal cumulative":cdf})
+
+@api.route('/cpu')
+class Cpu(Resource):
+    @api.response(200,"SUCCESS")
+    def post(self):
+        return jsonify(multiprocessing.cpu_count())
