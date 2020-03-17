@@ -17,4 +17,4 @@ if __name__ == "__main__":
         return output
 
 
-    calib("calibration_fqp.json")
+    calib("../calibration/calibration_fqp.json")

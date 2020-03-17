@@ -1,14 +1,17 @@
 import math
+
 import numpy as np
-from datetime import datetime
+from dateutil.parser import parse
 from scipy.stats import norm
+from scipy.optimize import minimize_scalar
+
 from quantools.analyticsTools.analyticsTools import yearFraction
+from quantools.library.fxvolCalibration.yieldCurve import discountFactorFromDays
 from quantools.library.utilities.classObject import OptionDesc
 from quantools.library.utilities.interpolation import leeExtrapolation, getInterpolatedValue, cubicSplineInterpolation
 from quantools.library.utilities.solver import newtonSolver1D, findRoot
 from quantools.library.utilities.utilitiesAccessor import getIndexBefore, pointFloorIndex
-from quantools.library.fxvolCalibration.yieldCurve import discountFactorFromDays
-from dateutil.parser import parse
+
 
 class FxExpiryfxVolInfo:
     def __init__(self,forwardStrike, premiumAdjustmentIndicator,
@@ -134,7 +137,6 @@ def constructFXVolSurface(data):
     surfaces = []
     for fxVol in  data["marketDataDefinitions"]["fxVolatilities"]:
         expiryInput = fxVol["expiries"]
-        expiryInputValue = data["marketData"]["fxVolatilityQuotes"][0]["quotes"]
         nbStrikesByExpiry = 2 * len(expiryInput[0]["butterflyQuoteIds"]) + 1
         surface = np.zeros((len(expiryInput) * 7, nbStrikesByExpiry + 1))
         nblines = 7 if fxVol["smileInterpolationMethod"] == "CUBIC_SPLINE" else 6
@@ -146,7 +148,6 @@ def constructFXVolSurface(data):
         ycValuesDom,ycDefDom = getYcInput(fxVol["domesticDiscountId"],data["marketData"]["yieldCurveValues"],data["marketDataDefinitions"]["yieldCurves"])
         ycValuesFor, ycDefFor = getYcInput(fxVol["foreignDiscountId"], data["marketData"]["yieldCurveValues"],
                                      data["marketDataDefinitions"]["yieldCurves"])
-        domDisc = fxVol["foreignDiscountId"]
         smileCounter = 0
         premiumAdjustmentIndicator = fxVol["premiumAdjusted"] * 1.0
         isSmileBroker = fxVol["strategyConvention"] == "BROKER_STRANGLE"
@@ -167,6 +168,42 @@ def constructFXVolSurface(data):
             smileCounter = smileCounter + 1
         surfaces.append(surface)
     return surfaces
+
+def calib1FxVol(asOfDate,marketData,ycDef,fxVolDef):
+    expiryInput = fxVolDef["expiries"]
+    nbStrikesByExpiry = 2 * len(expiryInput[0]["butterflyQuoteIds"]) + 1
+    surface = np.zeros((len(expiryInput) * 7, nbStrikesByExpiry + 1))
+    nblines = 7 if fxVolDef["smileInterpolationMethod"] == "CUBIC_SPLINE" else 6
+    expirySmileCurve = np.zeros((nblines, nbStrikesByExpiry))
+    domCur = fxVolDef["domesticCurrencyId"]
+    forCur = fxVolDef["foreignCurrencyId"]
+    spotDate, underlyingSpotValue = getFxInput(fxVolDef["currencyPairId"], marketData["fxRates"])
+    volatilityBasis = fxVolDef["basis"]
+    ycValuesDom, ycDefDom = getYcInput(fxVolDef["domesticDiscountId"], marketData["yieldCurveValues"],
+                                       ycDef)
+    ycValuesFor, ycDefFor = getYcInput(fxVolDef["foreignDiscountId"], marketData["yieldCurveValues"],
+                                       ycDef)
+    smileCounter = 0
+    premiumAdjustmentIndicator = fxVolDef["premiumAdjusted"] * 1.0
+    isSmileBroker = fxVolDef["strategyConvention"] == "BROKER_STRANGLE"
+    for smileLine in fxVolDef["expiries"]:
+        deliveryDate = parse(smileLine["deliveryDate"])
+        dfFor = discountFactorFromDays(ycValuesFor, ycDefFor, asOfDate, spotDate, deliveryDate)
+        dfDom = discountFactorFromDays(ycValuesDom, ycDefDom, asOfDate, spotDate, deliveryDate)
+        sqrtVolYearFraction = math.sqrt(yearFraction(asOfDate, parse(smileLine["expiryDate"]), volatilityBasis))
+        forwardStrike = underlyingSpotValue * dfFor / dfDom
+        fxVolInfo = FxExpiryfxVolInfo(forwardStrike, premiumAdjustmentIndicator,
+                                      getDeltaConventionAdjustment(smileLine["deltaConvention"], dfFor),
+                                      sqrtVolYearFraction,
+                                      dfDom, fxVolDef["id"], fxVolDef["smileInterpolationMethod"],
+                                      fxVolDef["smileInterpolationVariable"])
+
+        getExpirySmile(forCur, domCur, nbStrikesByExpiry, smileLine, fxVolInfo, pow(10, -6),
+                       underlyingSpotValue, expirySmileCurve, isSmileBroker, marketData)
+        fxCalibrationResultsDisplay(smileCounter, fxVolInfo, expirySmileCurve, surface)
+        smileCounter = smileCounter + 1
+    return surface
+
 
 def getYcInput(ycId,values,definitions):
     outputDef = {}
@@ -291,15 +328,16 @@ def computeStrikeFromDelta(delta, bsStdDev, forward, deltaConventionFactor, call
 
 def getBlackSpotPrice(forwardValue, strikeValue, bsStdDev, df, flavor):
 	return df * getBlackForwardPrice(forwardValue, strikeValue, bsStdDev, flavor)
-
+#@profile
 def computeStrikeFromAdjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator):
-	delta = callPutIndicator * abs(delta) / deltaConventionFactor
-	option = OptionDesc(callPutIndicator, bsStdDev, delta)
-	if callPutIndicator == -1:
-		return forward * newtonSolver1D(delta, 1, 1e-8, 10, getPremiumAdjustedDeltaKernel, option, "unused", "unused")
-	kMax = computeStrikeFromUnadjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator) / forward
-	kMin = findRoot(strikeFromMaximumAdjustedDelta, 0.1 * kMax, kMax, option)
-	return forward * findRoot(getPremiumAdjustedDeltaKernelBrent, kMin, 5 * kMax, option)
+    delta = callPutIndicator * abs(delta) / deltaConventionFactor
+    option = OptionDesc(callPutIndicator, bsStdDev, delta)
+    if callPutIndicator == -1:
+        return forward * newtonSolver1D(delta, 1, 1e-8, 10, getPremiumAdjustedDeltaKernel, option, "unused", "unused")
+    kMax = computeStrikeFromUnadjustedDelta(delta, bsStdDev, forward, deltaConventionFactor, callPutIndicator) / forward
+    kMin = findRoot(strikeFromMaximumAdjustedDelta, 0.1 * kMax, kMax, option)
+    return forward * findRoot(getPremiumAdjustedDeltaKernelBrent, kMin, 5 * kMax, option)
+
 
 def getPremiumAdjustedDeltaKernel(x, optionDefinition, optional1, optional2):
 	return impliedStrikeFromDeltaPremiumAdjusted(x, optionDefinition.stdDeviation, optionDefinition.callPutIndicator)

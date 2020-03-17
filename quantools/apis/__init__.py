@@ -6,10 +6,11 @@ from .calibration import api as calibration
 from .interpolation import api as interpolation
 from .analyticsTools import api as analytics
 from .mock import api as mock
+from .performance import api as performance
 
 api = Api(
     title='Quantitative tools',
-    version='1.0',
+    version='1.1',
     description='quantitative tools for pricing / calibrating / time series analysis',
     # All API metadatas
 )
@@ -20,4 +21,5 @@ api.add_namespace(calibration)
 api.add_namespace(interpolation)
 api.add_namespace(analytics)
 api.add_namespace(mock)
+api.add_namespace(performance)
 

@@ -75,5 +75,5 @@ class biNormalCDF(Resource):
 @api.route('/cpu')
 class Cpu(Resource):
     @api.response(200,"SUCCESS")
-    def post(self):
+    def get(self):
         return jsonify(multiprocessing.cpu_count())
