@@ -4,7 +4,7 @@ from flask import request, jsonify
 from flask_restplus import Namespace, Resource, fields
 
 from quantools.analyticsTools.analyticsTools import yearFraction, getBasis
-from quantools.pricing.mathematicTools import bivariateCND
+from quantools.pricing.mathematicTools import bivariateCND, normalCDF
 
 api = Namespace('analytics', 'Tools')
 
@@ -40,8 +40,8 @@ class yearFractionTools(Resource):
 
 
 
-@api.route('/normalCdf')
-class normalCDF(Resource):
+@api.route('/normalCDF')
+class normalCumultive(Resource):
     @api.response(200,"Success")
     @api.expect(api.model("input normal CDF",{"u" : fields.Float}))
     def post(self):
@@ -55,7 +55,7 @@ class normalCDF(Resource):
         # define model
         return jsonify({"normal cumulative":cdf})
 
-@api.route('/biNormalCdf')
+@api.route('/biNormalCDF')
 class biNormalCDF(Resource):
     @api.response(200,"Success")
     @api.expect(api.model("input bi normal CDF",{"x" : fields.Float,"y" : fields.Float,"rho" : fields.Float,}))
@@ -76,4 +76,4 @@ class biNormalCDF(Resource):
 class Cpu(Resource):
     @api.response(200,"SUCCESS")
     def get(self):
-        return jsonify(multiprocessing.cpu_count())
+        return jsonify(multiprocessing.cpu_count()-1)

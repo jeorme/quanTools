@@ -66,7 +66,7 @@ class FxVolPerFormanceMC(Resource):
         start_MCBuilding = timeit.default_timer()
         calib1FxVolMC = functools.partial(calib1FxVol, parse(content["asOfDate"]), content["marketData"],
                                           content["marketDataDefinitions"]["yieldCurves"])
-        pool = multiprocessing.Pool(multiprocessing.cpu_count() - 1)
+        pool = multiprocessing.Pool(multiprocessing.cpu_count()-1)
         end_MCBuilding = timeit.default_timer()
         start_calib = timeit.default_timer()
         surface = pool.starmap(calib1FxVolMC, zip(content["marketDataDefinitions"]["fxVolatilities"]))

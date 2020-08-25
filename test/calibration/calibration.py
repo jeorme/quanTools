@@ -29,7 +29,7 @@ class calibOneExpiryOneVol(unittest.TestCase):
             data = json.load(file)
         calib1FxVolMC = functools.partial(calib1FxVol, parse(data["asOfDate"]), data["marketData"],
                                           data["marketDataDefinitions"]["yieldCurves"])
-        pool = multiprocessing.Pool(multiprocessing.cpu_count() - 1)
+        pool = multiprocessing.Pool(multiprocessing.cpu_count()-1)
         surface = pool.starmap(calib1FxVolMC, zip(data["marketDataDefinitions"]["fxVolatilities"]))
         pool.close()
         pool.join()
