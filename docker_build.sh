@@ -13,7 +13,7 @@ while getopts "v:i:b:" optname
 docker login -u jvp2015 -p Fxinvjp79
 docker images
 docker build -t pricev1:$version .
-docker run -d -p 5000:5000pricev1:$version
+docker run -d -p 5000:5000 pricev1:$version
 docker-machine ip
 docker tag pricev1:$version jvp2015/pricev1:$version
 docker push jvp2015/pricev1:$version

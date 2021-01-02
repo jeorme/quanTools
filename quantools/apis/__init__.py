@@ -7,6 +7,7 @@ from .interpolation import api as interpolation
 from .analyticsTools import api as analytics
 from .mock import api as mock
 from .performance import api as performance
+from .openData import api as openData
 
 api = Api(
     title='Quantitative tools',
@@ -22,4 +23,5 @@ api.add_namespace(interpolation)
 api.add_namespace(analytics)
 api.add_namespace(mock)
 api.add_namespace(performance)
+api.add_namespace(openData)
 
