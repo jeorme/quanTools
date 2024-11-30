@@ -1,4 +1,4 @@
-pip==19.1.1
+pip==21.1
 Flask==1.0
 cloudant==2.4.0
 flasgger==0.6.4
